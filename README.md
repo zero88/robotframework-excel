@@ -4,7 +4,7 @@
 
 Robotframework-excel is a Robot Framework Library that provides keywords to allow opening, reading, writing and saving Excel files. The Robotframework-excel leverages two other python libraries [xlutils](https://pypi.python.org/pypi/xlutils/2.0.0) and [natsort](https://pypi.python.org/pypi/natsort/5.2.0). Xlutils installs [xlrd](https://pypi.python.org/pypi/xlrd) that reads data from an Excel file and [xlwt](https://pypi.python.org/pypi/xlwt) that can write to an Excel file.
 
-- Information about Robotframework-excel keywords can be found on the [ExcelRobot-Keyword Documentation](http://zero-88.github.io/Robotframework-excel/ExcelRobot-KeywordDocumentation.html) page.
+- Information about Robotframework-excel keywords can be found on the [ExcelRobot-Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot-KeywordDocumentation.html) page.
 - Information about working with Excel files in Python can be found on the [Python Excel](http://www.python-excel.org/) page.
 - Useful pdf for practical use with Excel files [here](http://www.simplistix.co.uk/presentations/python-excel.pdf).
 
