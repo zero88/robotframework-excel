@@ -1,0 +1,3 @@
+natsort>=5.0.0
+xlutils==2.0.0
+robotframework>=3.0
