@@ -1,7 +1,7 @@
 import sys
 import re
 import pip
-from setuptools import setup
+from setuptools import setup, find_packages
 from os.path import join, dirname
 
 _PACKAGE = 'ExcelRobot'
@@ -12,9 +12,6 @@ _version_path = join(dirname(__file__), _PACKAGE, 'version.py')
 with open(_version_path) as f:
     code = compile(f.read(), _version_path, 'exec')
     exec(code)
-
-_LINKS = []  # for repo urls (dependency_links)
-_REQUIRES = []  # for package names
 
 _DESCRIPTION = """
 This test library provides some keywords to allow
@@ -32,21 +29,23 @@ def __normalize(req):
     return match.group(1) if match else req
 
 
-requirements = pip.req.parse_requirements(
-    'requirements.txt', session=pip.download.PipSession()
-)
+def __gather_dependencies(require_file):
+    requirements = pip.req.parse_requirements(require_file, session=pip.download.PipSession())
+    _reqs, _links = [], []
+    for item in requirements:
+        has_link = False
+        if getattr(item, 'url', None):
+            _links.append(str(item.url))
+            has_link = True
+        if getattr(item, 'link', None):
+            _links.append(str(item.link))
+            has_link = True
+        if item.req:
+            req = str(item.req)
+            _reqs.append(__normalize(req) if has_link else req)
+    return _reqs, _links
 
-for item in requirements:
-    has_link = False
-    if getattr(item, 'url', None):
-        _LINKS.append(str(item.url))
-        has_link = True
-    if getattr(item, 'link', None):
-        _LINKS.append(str(item.link))
-        has_link = True
-    if item.req:
-        req = str(item.req)
-        _REQUIRES.append(__normalize(req) if has_link else req)
+_REQUIRES, _LINKS, = __gather_dependencies('requirements.txt')
 
 setup(
     name='robotframework-excel',
@@ -77,8 +76,7 @@ setup(
     ],
     install_requires=_REQUIRES,
     dependency_links=_LINKS,
-    packages=[_PACKAGE],
-    data_files=[('ExcelRobotTest', ['tests/acceptance/ExcelRobotTest.robot', 'tests/data/ExcelRobotTest.xls', 'tests/data/ExcelRobotTest.xlsx',
-                                    'docs/ExcelRobot-KeywordDocumentation.html', 'docs/ChangeLog.txt'])],
+    packages=find_packages(exclude=['tests']),
+    data_files=[('ExcelRobotTest', ['docs/ExcelRobot.html', 'docs/release-notes.md'])],
     download_url=_DOWNLOAD_URL,
 )

@@ -55,7 +55,7 @@ See [Robot Framework User Guide](http://code.google.com/p/robotframework/wiki/Us
 
 The test file `ExcelRobotTest.robot`, is an easily executable test for Robot Framework using Robotframework-excel.
 
-For in depth detail on how the keywords function, read the Keyword documentation found here : [Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot-KeywordDocumentation.html)
+For in depth detail on how the keywords function, read the Keyword documentation found here : [Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot.html)
 
 To run the test navigate to the Tests directory in C:\Python folder. Open a command prompt within the `tests/acceptance` folder and run:
 
