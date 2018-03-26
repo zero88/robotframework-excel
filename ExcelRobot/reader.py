@@ -1,28 +1,15 @@
 import functools
 import logging
-import re
 import os
 import os.path as path
-from enum import Enum
+import re
 from operator import itemgetter
 
 import natsort
-from xlrd import (XL_CELL_BLANK, XL_CELL_BOOLEAN, XL_CELL_DATE, XL_CELL_EMPTY,
-                  XL_CELL_ERROR, XL_CELL_NUMBER, XL_CELL_TEXT, cellname,
-                  open_workbook, xldate)
+from ExcelRobot.utils import BoolFormat, DataType, DateFormat, NumberFormat
+from xlrd import cellname, open_workbook, xldate
 
 LOGGER = logging.getLogger(__name__)
-
-
-class DataType(Enum):
-
-    DATE = XL_CELL_DATE
-    TEXT = XL_CELL_TEXT
-    NUMBER = XL_CELL_NUMBER
-    BLANK = XL_CELL_BLANK
-    EMPTY = XL_CELL_EMPTY
-    ERROR = XL_CELL_ERROR
-    BOOL = XL_CELL_BOOLEAN
 
 
 class ExcelReader:
@@ -37,7 +24,7 @@ class ExcelReader:
         return file_name
 
     @staticmethod
-    def _excel2num(cell_name):
+    def _excel_name2coord(cell_name):
         matrix = list(filter(lambda x: x.strip(), re.split(r'(\d+)', cell_name.upper())))
         LOGGER.debug('Matrix: %s', matrix)
         if len(matrix) != 2 or not re.match(r'[A-Z]+', matrix[0]) or not re.match(r'\d+', matrix[1]):
@@ -47,29 +34,14 @@ class ExcelReader:
         LOGGER.debug('Col, Row: %d, %d', col, row)
         return col, row
 
-    @staticmethod
-    def _excel2format(dt_format):
-        # TODO: Enhance by regex
-        if dt_format == 'yyyy-mm-dd':
-            return '%Y-%m-%d'
-        if dt_format == 'hh:mm:ss AM/PM':
-            return '%I:%M:%S %p'
-        if dt_format == 'yyyy-mm-dd hh:mm':
-            return '%Y-%m-%d %H:%M'
-        return ''
-
-    def __init__(self, file_path,
-                 date_format='yyyy-mm-dd', time_format='hh:mm:ss AM/PM',
-                 datetime_format='yyyy-mm-dd hh:mm', decimal_sep='.', thousand_sep=','):
+    def __init__(self, file_path, date_format=DateFormat(), number_format=NumberFormat(), bool_format=BoolFormat()):
         file_path = self._get_file_path(file_path)
         LOGGER.info('Opening file at %s', file_path)
         self.is_xls = not file_path.endswith('.xlsx')
         self.workbook = open_workbook(file_path, formatting_info=self.is_xls, on_demand=True)
-        self.date_format = self._excel2format(date_format)
-        self.time_format = self._excel2format(time_format)
-        self.datetime_format = self._excel2format(datetime_format)
-        self.decimal_sep = decimal_sep
-        self.thousand_sep = thousand_sep
+        self.date_format = date_format
+        self.number_format = number_format
+        self.bool_format = bool_format
 
     def _get_sheet(self, sheet_name):
         return self.workbook.sheet_by_name(sheet_name)
@@ -156,31 +128,46 @@ class ExcelReader:
             workbook_data.append(sheet_data)
         return workbook_data
 
-    def read_cell_data_by_name(self, sheet_name, cell_name, data_format=None):
+    def read_cell_data_by_name(self, sheet_name, cell_name, data_type='TEXT', use_format=True):
         """
         Uses the cell name to return the data from that cell.
         """
-        col, row = self._excel2num(cell_name)
-        return self.read_cell_data_by_coordinates(sheet_name, col, row, data_format)
+        col, row = self._excel_name2coord(cell_name)
+        return self.read_cell_data_by_coordinates(sheet_name, col, row, data_type, use_format)
 
-    def read_cell_data_by_coordinates(self, sheet_name, column, row, data_format=None):
+    def read_cell_data_by_coordinates(self, sheet_name, column, row, data_type='TEXT', use_format=True):
         """
         Uses the column and row to return the data from that cell.
+
+        :Args:
+        use_format: Use format to convert data to string
         """
         sheet = self._get_sheet(sheet_name)
         cell = sheet.cell(int(row), int(column))
         ctype = cell.ctype
-        LOGGER.info('Type: %s', cell.ctype)
-        LOGGER.info('Value: %s', cell.value)
+        value = cell.value
+        dtype = DataType.parse_type(data_type)
+        LOGGER.debug('Cell Type: %s', cell.ctype)
+        LOGGER.debug('Cell Value: %s', cell.value)
         if ctype == DataType.DATE.value:
-            return xldate.xldate_as_datetime(cell.value, 0).strftime(self._excel2format(data_format) or self.date_format)
-        return cell.value
+            if not (DataType.is_date(dtype) or DataType.TEXT == dtype):
+                raise ValueError('Cell type does not match with given data type')
+            date_value = xldate.xldate_as_datetime(value, self.date_format.datemode)
+            dformat = self.date_format.parse(dtype)
+            LOGGER.debug('Data Format: %s', dformat)
+            return date_value.strftime(dformat) if use_format else date_value
+        if ctype == DataType.NUMBER.value:
+            if not (DataType.is_number(dtype) or DataType.TEXT == dtype):
+                raise ValueError('Cell type does not match with given data type')
+            return self.number_format.format(value) if use_format else value
+        if ctype == DataType.BOOL.value:
+            if not (DataType.is_bool(dtype) or DataType.TEXT == dtype):
+                raise ValueError('Cell type does not match with given data type')
+            return self.bool_format.format(value) if use_format else value
+        return value
 
     def check_cell_type(self, sheet_name, column, row, data_type):
         """
         Checks the type of value that is within the cell of the sheet name selected.
         """
-        excel_type = DataType[data_type]
-        if excel_type is None:
-            raise ValueError('Not support %s' % data_type)
-        return excel_type.value == self._get_cell_type(sheet_name, column, row)
+        return DataType.parse_type(data_type).value == self._get_cell_type(sheet_name, column, row)

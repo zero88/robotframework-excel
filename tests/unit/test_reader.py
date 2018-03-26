@@ -1,9 +1,11 @@
 #!/usr/bin/python
 import os.path as path
-from nose.tools import eq_, assert_in
-from parameterized import parameterized
+from datetime import datetime
 
-from ExcelRobot.reader import ExcelReader, DataType
+from ExcelRobot.reader import ExcelReader
+from ExcelRobot.utils import DataType
+from nose.tools import assert_in, eq_
+from parameterized import parameterized
 
 CURRENT_DIR = path.dirname(path.abspath(__file__))
 DATA_DIR = path.join(CURRENT_DIR, '../data')
@@ -69,10 +71,10 @@ def test_get_row_values(input_file, sheet_name, column, expected):
 
 @parameterized([
     ('ExcelRobotTest.xls', 'TestSheet1', 'a2', 'User1'),
-    ('ExcelRobotTest.xls', 'TestSheet1', 'B2', 57),
+    ('ExcelRobotTest.xls', 'TestSheet1', 'B2', '57.00'),
     ('ExcelRobotTest.xls', 'TestSheet2', 'B2', '23.8.1982'),
     ('ExcelRobotTest.xlsx', 'TestSheet1', 'A2', 'User1'),
-    ('ExcelRobotTest.xlsx', 'TestSheet1', 'B2', 57),
+    ('ExcelRobotTest.xlsx', 'TestSheet1', 'B2', '57.00'),
     ('ExcelRobotTest.xlsx', 'TestSheet2', 'B2', '23.8.1982'),
 ])
 def test_get_cell_value_by_name(input_file, sheet_name, cell_name, expected):
@@ -81,20 +83,43 @@ def test_get_cell_value_by_name(input_file, sheet_name, cell_name, expected):
 
 
 @parameterized([
+    ('ExcelRobotTest.xls', 'TestSheet1', 0, 1, None, 'User1'),
+    ('ExcelRobotTest.xls', 'TestSheet1', 1, 1, DataType.NUMBER.name, '57.00'),
+    ('ExcelRobotTest.xls', 'TestSheet2', 1, 1, DataType.TEXT.name, '23.8.1982'),
+    ('ExcelRobotTest.xls', 'TestSheet3', 2, 1, DataType.DATE.name, '1982-05-14'),
+    ('ExcelRobotTest.xls', 'TestSheet3', 3, 1, DataType.BOOL.name, 'Yes'),
+    ('ExcelRobotTest.xls', 'TestSheet3', 6, 1, DataType.NUMBER.name, '7.50'),
+    ('ExcelRobotTest.xls', 'TestSheet3', 7, 1, DataType.TIME.name, '08:00:00 AM'),
+    ('ExcelRobotTest.xlsx', 'TestSheet1', 0, 1, None, 'User1'),
+    ('ExcelRobotTest.xlsx', 'TestSheet1', 1, 1, DataType.NUMBER.name, '57.00'),
+    ('ExcelRobotTest.xlsx', 'TestSheet2', 1, 1, DataType.TEXT.name, '23.8.1982'),
+    ('ExcelRobotTest.xlsx', 'TestSheet3', 2, 1, DataType.DATE.name, '1982-05-14'),
+    ('ExcelRobotTest.xlsx', 'TestSheet3', 3, 1, DataType.BOOL.name, 'Yes'),
+    ('ExcelRobotTest.xlsx', 'TestSheet3', 6, 1, DataType.NUMBER.name, '7.50'),
+    ('ExcelRobotTest.xlsx', 'TestSheet3', 7, 1, DataType.TIME.name, '08:00:00 AM'),
+])
+def test_get_cell_value_by_coord(input_file, sheet_name, col, row, data_type, expected):
+    reader = ExcelReader(path.join(DATA_DIR, input_file))
+    eq_(expected, reader.read_cell_data_by_coordinates(sheet_name, col, row, data_type=data_type))
+
+
+@parameterized([
     ('ExcelRobotTest.xls', 'TestSheet1', 0, 1, 'User1'),
     ('ExcelRobotTest.xls', 'TestSheet1', 1, 1, 57),
     ('ExcelRobotTest.xls', 'TestSheet2', 1, 1, '23.8.1982'),
-    ('ExcelRobotTest.xls', 'TestSheet3', 2, 1, '1982-05-14'),
+    ('ExcelRobotTest.xls', 'TestSheet3', 2, 1, datetime(1982, 5, 14)),
     ('ExcelRobotTest.xls', 'TestSheet3', 3, 1, True),
+    ('ExcelRobotTest.xls', 'TestSheet3', 6, 1, 7.5),
     ('ExcelRobotTest.xlsx', 'TestSheet1', 0, 1, 'User1'),
     ('ExcelRobotTest.xlsx', 'TestSheet1', 1, 1, 57),
     ('ExcelRobotTest.xlsx', 'TestSheet2', 1, 1, '23.8.1982'),
-    ('ExcelRobotTest.xlsx', 'TestSheet3', 2, 1, '1982-05-14'),
+    ('ExcelRobotTest.xlsx', 'TestSheet3', 2, 1, datetime(1982, 5, 14)),
     ('ExcelRobotTest.xlsx', 'TestSheet3', 3, 1, True),
+    ('ExcelRobotTest.xlsx', 'TestSheet3', 6, 1, 7.5),
 ])
-def test_get_cell_value_by_coord(input_file, sheet_name, col, row, expected):
+def test_get_cell_raw_value_by_coord(input_file, sheet_name, col, row, expected):
     reader = ExcelReader(path.join(DATA_DIR, input_file))
-    eq_(expected, reader.read_cell_data_by_coordinates(sheet_name, col, row))
+    eq_(expected, reader.read_cell_data_by_coordinates(sheet_name, col, row, use_format=False))
 
 
 @parameterized([

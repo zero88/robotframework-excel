@@ -1,15 +1,20 @@
 from ExcelRobot.reader import ExcelReader
+from ExcelRobot.utils import BoolFormat, DateFormat, NumberFormat
 from ExcelRobot.writer import ExcelWriter
 
 
 class ExcelLibrary:
 
-    def __init__(self, date_format='yyyy-mm-dd', time_format='hh:mm:ss AM/PM', datetime_format='yyyy-mm-dd hh:mm', decimal_sep='.', thousand_sep=','):
+    def __init__(self, date_format=DateFormat(), number_format=NumberFormat(), bool_format=BoolFormat()):
+        """
+        Init Excel Keyword with some default configuration.
+
+        Excel Date Time format
+        https://support.office.com/en-us/article/format-numbers-as-dates-or-times-418bd3fe-0577-47c8-8caa-b4d30c528309
+        """
         self.date_format = date_format
-        self.time_format = time_format
-        self.datetime_format = datetime_format
-        self.decimal_sep = decimal_sep
-        self.thousand_sep = thousand_sep
+        self.number_format = number_format
+        self.bool_format = bool_format
         self.reader = None
         self.writer = None
 
@@ -25,9 +30,7 @@ class ExcelLibrary:
         | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
 
         """
-        self.reader = ExcelReader(file_path,
-                                  self.date_format, self.time_format,
-                                  self.datetime_format, self.decimal_sep, self.thousand_sep)
+        self.reader = ExcelReader(file_path, self.date_format, self.number_format, self.bool_format)
 
     def open_excel_to_write(self, file_path, new_path=None, override=False):
         """
@@ -35,18 +38,16 @@ class ExcelLibrary:
         In case `New Path` is given, new file will be created based on content of current file.
 
         Arguments:
-                |  File Path (string)           | The Excel file name or path will be opened. If file name then openning file in current directory.   |
-                |  New Path                     | New path will be saved.                                                                             |
-                |  Override (Default: `False`)  | If `True`, new file will be overriden if it exists.                                                 |
+                |  File Path (string)           | The Excel file name or path will be opened. If file name then openning file in current directory. |
+                |  New Path                     | New path will be saved.                                                                           |
+                |  Override (Default: `False`)  | If `True`, new file will be overriden if it exists.                                               |
         Example:
 
         | *Keywords*           |  *Parameters*                                      |
         | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
 
         """
-        self.writer = ExcelWriter(file_path, new_path, override,
-                                  self.date_format, self.time_format,
-                                  self.datetime_format, self.decimal_sep, self.thousand_sep)
+        self.writer = ExcelWriter(file_path, new_path, override, self.date_format, self.number_format, self.bool_format)
 
     def get_sheet_names(self):
         """
@@ -128,7 +129,7 @@ class ExcelLibrary:
         Arguments:
                 |  Sheet Name (string)                      | The selected sheet that the row values will be returned from.         |
                 |  Row (int)                                | The row integer value value is indicated to get values.               |
-                |  Include Empty Cells (Default: `True`)    |  If `False` then only return cells with values.                       |
+                |  Include Empty Cells (Default: `True`)    | If `False` then only return cells with values.                        |
         Example:
 
         | *Keywords*           |  *Parameters*                                          |
@@ -169,13 +170,16 @@ class ExcelLibrary:
         """
         return self.reader.get_workbook_values(include_empty_cells)
 
-    def read_cell_data_by_name(self, sheet_name, cell_name, data_format=None):
+    def read_cell_data_by_name(self, sheet_name, cell_name, data_type='TEXT', use_format=True):
         """
         Uses the cell name to return the data from that cell.
+        If `Use Format` is False, then data will be raw data with correct data type
 
         Arguments:
-                |  Sheet Name (string)  | The selected sheet that the cell value will be returned from.  |
-                |  Cell Name (string)   | The selected cell name that the value will be returned from.   |
+                |  Sheet Name (string)                      | The selected sheet that the cell value will be returned from.                     |
+                |  Cell Name (string)                       | The selected cell name that the value will be returned from.                      |
+                |  Data Type (string)                       | Data type. Available options: `TEXT`, DATE`, `TIME`, `DATETIME`, `NUMBER`, `BOOL` |
+                |  Use Format (boolean) (Default: `True`)   | Use format to convert data to string.                                             |
         Example:
 
         | *Keywords*                |  *Parameters*                                             |
@@ -183,16 +187,19 @@ class ExcelLibrary:
         | Read Cell Data By Name    |  TestSheet1                                        |  A2  |
 
         """
-        return self.reader.read_cell_data_by_name(sheet_name, cell_name, data_format)
+        return self.reader.read_cell_data_by_name(sheet_name, cell_name, data_type, use_format)
 
-    def read_cell_data_by_coordinates(self, sheet_name, column, row, data_format=None):
+    def read_cell_data_by_coordinates(self, sheet_name, column, row, data_type='TEXT', use_format=True):
         """
         Uses the column and row to return the data from that cell.
+        If `Use Format` is False, then data will be raw data with correct data type
 
         Arguments:
-                |  Sheet Name (string)  | The selected sheet that the cell value will be returned from.         |
-                |  Column (int)         | The column integer value that the cell value will be returned from.   |
-                |  Row (int)            | The row integer value that the cell value will be returned from.      |
+                |  Sheet Name (string)                      | The selected sheet that the cell value will be returned from.                     |
+                |  Column (int)                             | The column integer value that the cell value will be returned from.               |
+                |  Row (int)                                | The row integer value that the cell value will be returned from.                  |
+                |  Data Type (string)                       | Data type. Available options: `TEXT`, DATE`, `TIME`, `DATETIME`, `NUMBER`, `BOOL` |
+                |  Use Format (boolean) (Default: `True`)   | Use format to convert data to string.                                             |
         Example:
 
         | *Keywords*                        |  *Parameters*                                              |
@@ -200,7 +207,7 @@ class ExcelLibrary:
         | Read Cell Data By Coordinates     |  TestSheet1                                        | 0 | 0 |
 
         """
-        return self.reader.read_cell_data_by_coordinates(sheet_name, column, row, data_format)
+        return self.reader.read_cell_data_by_coordinates(sheet_name, column, row, data_type, use_format)
 
     def check_cell_type(self, sheet_name, column, row, data_type):
         """

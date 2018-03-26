@@ -2,18 +2,21 @@
 
 ## Introduction
 
-Robotframework-excel is a Robot Framework Library that provides keywords to allow opening, reading, writing and saving Excel files. The Robotframework-excel leverages two other python libraries [xlutils](https://pypi.python.org/pypi/xlutils/2.0.0) and [natsort](https://pypi.python.org/pypi/natsort/5.2.0). Xlutils installs [xlrd](https://pypi.python.org/pypi/xlrd) that reads data from an Excel file and [xlwt](https://pypi.python.org/pypi/xlwt) that can write to an Excel file.
+Robotframework-excel is a Robot Framework Library that provides keywords to allow opening, reading, writing and saving Excel files.
 
-- Information about Robotframework-excel keywords can be found on the [ExcelRobot-Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot-KeywordDocumentation.html) page.
+- Information about Robotframework-excel keywords can be found on the [ExcelRobot-Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot.html) page.
 - Information about working with Excel files in Python can be found on the [Python Excel](http://www.python-excel.org/) page.
-- Useful pdf for practical use with Excel files [here](http://www.simplistix.co.uk/presentations/python-excel.pdf).
 
 ## Requirements
 
 - Python >= 2.7 | Python >= 3.3
 - Robot Framework >= 3.0
 - xlutils 2.0.0. Access the downloads [here](https://pypi.python.org/pypi/xlutils/1.7.1), or use pip install xlutils.
+  - [xlrd](https://pypi.python.org/pypi/xlrd) that reads data from an Excel file
+  - [xlwt](https://pypi.python.org/pypi/xlwt) that can write to an Excel file.
+- XlsxWriter 1.0.2
 - natsort 5.2.0. Access the downloads [here](https://pypi.python.org/pypi/natsort/5.2.0), or use pip install natsort.
+- enum34 1.1.6
 
 ## Installation
 
@@ -44,7 +47,7 @@ pip uninstall robotframework-excel
 - `ExcelRobot/base.py`: The Robot Python Library defines excel operation keyword.
 - `tests/unit/*.py`: Unit test
 - `tests/acceptance/ExcelRobotTest.robot`: Example robot test file to display what various keywords from Robotframework-excel accomplish
-- `docs/ExcelRobot-KeywordDocumentation.html`: Keyword documentation for the Robotframework-excel.
+- `docs/ExcelRobot.html`: Keyword documentation for the Robotframework-excel.
 
 ## Usage
 
@@ -57,7 +60,7 @@ The test file `ExcelRobotTest.robot`, is an easily executable test for Robot Fra
 
 For in depth detail on how the keywords function, read the Keyword documentation found here : [Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot.html)
 
-To run the test navigate to the Tests directory in C:\Python folder. Open a command prompt within the `tests/acceptance` folder and run:
+Open a command prompt within the `tests/acceptance` folder and run:
 
 ```bash
 pybot ExcelRobotTest.robot -d "./out"
@@ -71,7 +74,7 @@ pybot ExcelRobotTest.robot -d "./out"
 
 - When using the keyword `Add New Sheet` the user cannot perform any functions before or after this keyword on the currently open workbook. The changes that other keywords make will not be saved when the keyword `Add New Sheet` is used. They must add a sheet then save the workbook before using any other keyword. If they want to use any other keywords on the workbbok they must open the workbook again to do so.
 
-## Getting Help
+## Contribution
 
 The [user group for Robot Framework](http://groups.google.com/group/robotframework-users) is the best place to get help. Include in the post:
 

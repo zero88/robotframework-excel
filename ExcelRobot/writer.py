@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import xlsxwriter
 from ExcelRobot.reader import ExcelReader
+from ExcelRobot.utils import BoolFormat, DataType, DateFormat, NumberFormat
 from xlrd import (XL_CELL_BLANK, XL_CELL_BOOLEAN, XL_CELL_DATE, XL_CELL_EMPTY,
                   XL_CELL_ERROR, XL_CELL_NUMBER, XL_CELL_TEXT, cellname,
                   xldate_as_tuple)
@@ -11,10 +12,8 @@ from xlwt import Workbook, easyxf
 
 class ExcelWriter(ExcelReader):
 
-    def __init__(self, file_path, new_path=None, override=False,
-                 date_format='yyyy-mm-dd', time_format='hh:mm:ss AM/PM',
-                 datetime_format='yyyy-mm-dd hh:mm', decimal_sep='.', thousand_sep=','):
-        super().__init__(file_path, date_format, time_format, datetime_format, decimal_sep, thousand_sep)
+    def __init__(self, file_path, new_path=None, override=False, date_format=DateFormat(), number_format=NumberFormat(), bool_format=BoolFormat()):
+        super().__init__(file_path, date_format, number_format, bool_format)
         self.new_path = new_path
         self.override = override
         self.copied_workbook = None
