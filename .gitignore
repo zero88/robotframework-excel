@@ -1,4 +1,7 @@
 *.pyc
 /out
+/dist
+/build
+*egg-info/
 
 build.md
