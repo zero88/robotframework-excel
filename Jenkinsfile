@@ -59,8 +59,8 @@ pipeline {
     }
 
     post {
-        failure {
-            // Send mail
-        }
+        // failure {
+        //     // Send mail
+        // }
     }
 }
