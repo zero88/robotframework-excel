@@ -1,12 +1,9 @@
-import functools
 import logging
-import os
-import os.path as path
-import re
 from operator import itemgetter
 
 import natsort
-from ExcelRobot.utils import BoolFormat, DataType, DateFormat, NumberFormat
+from ExcelRobot.utils import (BoolFormat, DataType, DateFormat, NumberFormat,
+                              excel_name2coord, get_file_path, is_file)
 from xlrd import cellname, open_workbook, xldate
 
 LOGGER = logging.getLogger(__name__)
@@ -14,34 +11,30 @@ LOGGER = logging.getLogger(__name__)
 
 class ExcelReader:
 
-    @staticmethod
-    def _get_file_path(file_name):
-        if not file_name.endswith('.xlsx') and not file_name.endswith('.xls'):
-            raise ValueError('Only support file with extenstion: xls and xlsx')
-        file_path = path.normpath(file_name)
-        if len(path.splitdrive(file_path)) > 1:
-            return path.join(os.getcwd(), file_name)
-        return file_name
-
-    @staticmethod
-    def _excel_name2coord(cell_name):
-        matrix = list(filter(lambda x: x.strip(), re.split(r'(\d+)', cell_name.upper())))
-        LOGGER.debug('Matrix: %s', matrix)
-        if len(matrix) != 2 or not re.match(r'[A-Z]+', matrix[0]) or not re.match(r'\d+', matrix[1]):
-            raise ValueError('Cell name is invalid')
-        col = int(functools.reduce(lambda s, a: s * 26 + ord(a) - ord('A') + 1, matrix[0], 0)) - 1
-        row = int(matrix[1]) - 1
-        LOGGER.debug('Col, Row: %d, %d', col, row)
-        return col, row
-
     def __init__(self, file_path, date_format=DateFormat(), number_format=NumberFormat(), bool_format=BoolFormat()):
-        file_path = self._get_file_path(file_path)
-        LOGGER.info('Opening file at %s', file_path)
-        self.is_xls = not file_path.endswith('.xlsx')
-        self.workbook = open_workbook(file_path, formatting_info=self.is_xls, on_demand=True)
+        self.file_path = get_file_path(file_path)
+        LOGGER.info('Opening file at %s', self.file_path)
+        if not self.file_path or not is_file(self.file_path):
+            self._workbook = None
+            raise FileNotFoundError('Excel file is not found')
+        self._workbook = open_workbook(self.file_path, formatting_info=self.is_xls, on_demand=True)
         self.date_format = date_format
         self.number_format = number_format
         self.bool_format = bool_format
+
+    @property
+    def is_xls(self):
+        return not self.file_path.endswith('.xlsx')
+
+    @property
+    def extension(self):
+        return 'xls' if self.is_xls else 'xlsx'
+
+    @property
+    def workbook(self):
+        if not self._workbook:
+            self._workbook = open_workbook(self.file_path, formatting_info=self.is_xls, on_demand=True)
+        return self._workbook
 
     def _get_sheet(self, sheet_name):
         return self.workbook.sheet_by_name(sheet_name)
@@ -128,40 +121,46 @@ class ExcelReader:
             workbook_data.append(sheet_data)
         return workbook_data
 
-    def read_cell_data_by_name(self, sheet_name, cell_name, data_type='TEXT', use_format=True):
+    def read_cell_data_by_name(self, sheet_name, cell_name, data_type=None, use_format=True):
         """
         Uses the cell name to return the data from that cell.
         """
-        col, row = self._excel_name2coord(cell_name)
-        return self.read_cell_data_by_coordinates(sheet_name, col, row, data_type, use_format)
+        col, row = excel_name2coord(cell_name)
+        return self.read_cell_data(sheet_name, col, row, data_type, use_format)
 
-    def read_cell_data_by_coordinates(self, sheet_name, column, row, data_type='TEXT', use_format=True):
+    def read_cell_data(self, sheet_name, column, row, data_type=None, use_format=True):
         """
         Uses the column and row to return the data from that cell.
 
         :Args:
+        data_type: Indicate explicit data type to convert
         use_format: Use format to convert data to string
         """
         sheet = self._get_sheet(sheet_name)
         cell = sheet.cell(int(row), int(column))
-        ctype = cell.ctype
+        ctype = DataType.parse_type_by_value(cell.ctype)
         value = cell.value
-        dtype = DataType.parse_type(data_type)
-        LOGGER.debug('Cell Type: %s', cell.ctype)
-        LOGGER.debug('Cell Value: %s', cell.value)
-        if ctype == DataType.DATE.value:
-            if not (DataType.is_date(dtype) or DataType.TEXT == dtype):
+        gtype = DataType.parse_type(data_type)
+        LOGGER.debug('Given Type: %s', gtype)
+        LOGGER.debug('Cell Type: %s', ctype)
+        LOGGER.debug('Cell Value: %s', value)
+        if DataType.is_date(ctype):
+            if gtype and not DataType.is_date(gtype):
                 raise ValueError('Cell type does not match with given data type')
             date_value = xldate.xldate_as_datetime(value, self.date_format.datemode)
-            dformat = self.date_format.parse(dtype)
-            LOGGER.debug('Data Format: %s', dformat)
-            return date_value.strftime(dformat) if use_format else date_value
-        if ctype == DataType.NUMBER.value:
-            if not (DataType.is_number(dtype) or DataType.TEXT == dtype):
+            if use_format:
+                return self.date_format.format(gtype, date_value)
+            elif DataType.DATE == gtype:
+                return date_value.date()
+            elif DataType.TIME == gtype:
+                return date_value.time()
+            return date_value
+        if DataType.is_number(ctype):
+            if gtype and not DataType.is_number(gtype):
                 raise ValueError('Cell type does not match with given data type')
-            return self.number_format.format(value) if use_format else value
-        if ctype == DataType.BOOL.value:
-            if not (DataType.is_bool(dtype) or DataType.TEXT == dtype):
+            return self.number_format.format(gtype, value) if use_format else value
+        if DataType.is_bool(ctype):
+            if gtype and not DataType.is_bool(gtype):
                 raise ValueError('Cell type does not match with given data type')
             return self.bool_format.format(value) if use_format else value
         return value
@@ -170,4 +169,8 @@ class ExcelReader:
         """
         Checks the type of value that is within the cell of the sheet name selected.
         """
-        return DataType.parse_type(data_type).value == self._get_cell_type(sheet_name, column, row)
+        ctype = DataType.parse_type_by_value(self._get_cell_type(sheet_name, column, row))
+        gtype = DataType.parse_type(data_type)
+        LOGGER.debug('Given Type: %s', gtype)
+        LOGGER.debug('Cell Type: %s', ctype)
+        return ctype == gtype

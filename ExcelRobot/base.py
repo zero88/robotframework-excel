@@ -43,8 +43,8 @@ class ExcelLibrary:
                 |  Override (Default: `False`)  | If `True`, new file will be overriden if it exists.                                               |
         Example:
 
-        | *Keywords*           |  *Parameters*                                      |
-        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
+        | *Keywords*                |  *Parameters*                                      |
+        | Open Excel To Write       |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
 
         """
         self.writer = ExcelWriter(file_path, new_path, override, self.date_format, self.number_format, self.bool_format)
@@ -170,16 +170,18 @@ class ExcelLibrary:
         """
         return self.reader.get_workbook_values(include_empty_cells)
 
-    def read_cell_data_by_name(self, sheet_name, cell_name, data_type='TEXT', use_format=True):
+    def read_cell_data_by_name(self, sheet_name, cell_name, data_type=None, use_format=True):
         """
         Uses the cell name to return the data from that cell.
-        If `Use Format` is False, then data will be raw data with correct data type
+
+        - `Data Type` indicates explicit data type to convert cell value to correct data type.
+        - `Use Format` is False, then cell value will be raw data with correct data type.
 
         Arguments:
-                |  Sheet Name (string)                      | The selected sheet that the cell value will be returned from.                     |
-                |  Cell Name (string)                       | The selected cell name that the value will be returned from.                      |
-                |  Data Type (string)                       | Data type. Available options: `TEXT`, DATE`, `TIME`, `DATETIME`, `NUMBER`, `BOOL` |
-                |  Use Format (boolean) (Default: `True`)   | Use format to convert data to string.                                             |
+                |  Sheet Name (string)                      | The selected sheet that the cell value will be returned from.             |
+                |  Cell Name (string)                       | The selected cell name that the value will be returned from.              |
+                |  Data Type (string)                       | Available options: `TEXT`, DATE`, `TIME`, `DATETIME`, `NUMBER`, `BOOL`    |
+                |  Use Format (boolean) (Default: `True`)   | Use format to convert data to string.                                     |
         Example:
 
         | *Keywords*                |  *Parameters*                                             |
@@ -189,25 +191,27 @@ class ExcelLibrary:
         """
         return self.reader.read_cell_data_by_name(sheet_name, cell_name, data_type, use_format)
 
-    def read_cell_data_by_coordinates(self, sheet_name, column, row, data_type='TEXT', use_format=True):
+    def read_cell_data(self, sheet_name, column, row, data_type=None, use_format=True):
         """
         Uses the column and row to return the data from that cell.
-        If `Use Format` is False, then data will be raw data with correct data type
+
+        - `Data Type` indicates explicit data type to convert cell value to correct data type.
+        - `Use Format` is False, then cell value will be raw data with correct data type.
 
         Arguments:
-                |  Sheet Name (string)                      | The selected sheet that the cell value will be returned from.                     |
-                |  Column (int)                             | The column integer value that the cell value will be returned from.               |
-                |  Row (int)                                | The row integer value that the cell value will be returned from.                  |
-                |  Data Type (string)                       | Data type. Available options: `TEXT`, DATE`, `TIME`, `DATETIME`, `NUMBER`, `BOOL` |
-                |  Use Format (boolean) (Default: `True`)   | Use format to convert data to string.                                             |
+                |  Sheet Name (string)                      | The selected sheet that the cell value will be returned from.             |
+                |  Column (int)                             | The column integer value that the cell value will be returned from.       |
+                |  Row (int)                                | The row integer value that the cell value will be returned from.          |
+                |  Data Type (string)                       | Available options: `TEXT`, DATE`, `TIME`, `DATETIME`, `NUMBER`, `BOOL`    |
+                |  Use Format (boolean) (Default: `True`)   | Use format to convert data to string.                                     |
         Example:
 
-        | *Keywords*                        |  *Parameters*                                              |
-        | Open Excel                        |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |   |   |
-        | Read Cell Data By Coordinates     |  TestSheet1                                        | 0 | 0 |
+        | *Keywords*        |  *Parameters*                                              |
+        | Open Excel        |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |   |   |
+        | Read Cell Data    |  TestSheet1                                        | 0 | 0 |
 
         """
-        return self.reader.read_cell_data_by_coordinates(sheet_name, column, row, data_type, use_format)
+        return self.reader.read_cell_data(sheet_name, column, row, data_type, use_format)
 
     def check_cell_type(self, sheet_name, column, row, data_type):
         """
@@ -217,7 +221,7 @@ class ExcelLibrary:
                 |  Sheet Name (string)  | The selected sheet that the cell type will be checked from.                                   |
                 |  Column (int)         | The column integer value that will be used to check the cell type.                            |
                 |  Row (int)            | The row integer value that will be used to check the cell type.                               |
-                |  Data Type (string)   | Data type to check. Available options: `DATE`, `TEXT`, `NUMBER`, `BOOL`, `EMPTY`, `ERROR`     |
+                |  Data Type (string)   | Available options: `DATE`, `TIME`, `DATE_TIME`, `TEXT`, `NUMBER`, `BOOL`, `EMPTY`, `ERROR`    |
         Example:
 
         | *Keywords*           |  *Parameters*                                              |       |
@@ -227,117 +231,69 @@ class ExcelLibrary:
         """
         return self.reader.check_cell_type(sheet_name, column, row, data_type)
 
-    def write_number_to_cell(self, sheet_name, column, row, value, decimal_sep=None, thousand_sep=None):
+    def write_to_cell_by_name(self, sheet_name, cell_name, value, data_type=None):
         """
-        Using the sheet name the value of the indicated cell is set to be the number given in the parameter.
+        Write data to cell by using the given sheet name and the given cell that defines by name.
+
+        If `Data Type` is not provided, `ExcelRobot` will introspect data type from given `value` to define cell type
 
         Arguments:
-                |  Sheet Name (string)          | The selected sheet that the cell will be modified from.        |
-                |  Column (int)                 | The column integer value that will be used to modify the cell. |
-                |  Row (int)                    | The row integer value that will be used to modify the cell.    |
-                |  Value (int)                  | The integer value that will be added.                          |
-                |  Decimal Separator (string)   | Overide decimal separtor in global scope.                      |
-                |  Thousand Separator (string)  | Overide thousand separtor in global scope.                     |
+                |  Sheet Name (string)                      | The selected sheet that the cell will be modified from.                       |
+                |  Cell Name (string)                       | The selected cell name that the value will be returned from.                  |
+                |  Value (string|number|datetime|boolean)   | Raw value or string value then using DataType to decide data type to write    |
+                |  Data Type (string)                       | Available options: `DATE`, `TIME`, `DATE_TIME`, `TEXT`, `NUMBER`, `BOOL`      |
         Example:
 
-        | *Keywords*           |  *Parameters*                                                         |
-        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |      |
-        | Write Number To Cell |  TestSheet1                                        |  0  |  0  |  34  |
+        | *Keywords*            |  *Parameters*                                                                     |
+        | Open Excel            |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |                      |       |
+        | Write To Cell By Name |  TestSheet1                                        |  A1  |  34           |       |
+        | Write To Cell By Name |  TestSheet1                                        |  A2  |  2018-03-29   | DATE  |
+        | Write To Cell By Name |  TestSheet1                                        |  A3  |  YES          | BOOL  |
 
         """
-        self.writer.write_number_to_cell(sheet_name, column, row, value, decimal_sep, thousand_sep)
+        self.writer.write_to_cell_by_name(sheet_name, cell_name, value, data_type)
 
-    def write_string_to_cell(self, sheet_name, column, row, value):
+    def write_to_cell(self, sheet_name, column, row, value, data_type=None):
         """
-        Using the sheet name the value of the indicated cell is set to be the string given in the parameter.
+        Write data to cell by using the given sheet name and the given cell that defines by column and row.
+
+        If `Data Type` is not provided, `ExcelRobot` will introspect data type from given `value` to define cell type
 
         Arguments:
-                |  Sheet Name (string) | The selected sheet that the cell will be modified from.        |
-                |  Column (int)        | The column integer value that will be used to modify the cell. |
-                |  Row (int)           | The row integer value that will be used to modify the cell.    |
-                |  Value (string)      | The string value that will be added.                           |
+                |  Sheet Name (string)                      | The selected sheet that the cell will be modified from.                       |
+                |  Column (int)                             | The column integer value that will be used to modify the cell.                |
+                |  Row (int)                                | The row integer value that will be used to modify the cell.                   |
+                |  Value (string|number|datetime|boolean)   | Raw value or string value then using DataType to decide data type to write    |
+                |  Data Type (string)                       | Available options: `DATE`, `TIME`, `DATE_TIME`, `TEXT`, `NUMBER`, `BOOL`      |
         Example:
 
-        | *Keywords*            |  *Parameters*                                                           |
-        | Open Excel            |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |        |
-        | Write String To Cell  |  TestSheet1                                        |  0  |  0  |  Hello |
+        | *Keywords*            |  *Parameters*                                                                 |
+        | Open Excel            |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |              |       |
+        | Write To Cell         |  TestSheet1                                        |  0  |  0  |  34          |       |
+        | Write To Cell         |  TestSheet1                                        |  1  |  1  |  2018-03-29  | DATE  |
+        | Write To Cell         |  TestSheet1                                        |  2  |  2  |  YES         | BOOL  |
 
         """
-        self.writer.write_string_to_cell(sheet_name, column, row, value)
+        self.writer.write_to_cell(sheet_name, column, row, value, data_type)
 
-    def write_date_to_cell(self, sheet_name, column, row, value, date_format=None):
-        """
-        Using the sheet name the value of the indicated cell is set to be the date given in the parameter.
+    # def modify_cell_with(self, sheet_name, column, row, op, val):
+    #     """
+    #     Using the sheet name a cell is modified with the given operation and value.
 
-        Arguments:
-                |  Sheet Name (string)              | The selected sheet that the cell will be modified from.           |
-                |  Column (int)                     | The column integer value that will be used to modify the cell.    |
-                |  Row (int)                        | The row integer value that will be used to modify the cell.       |
-                |  Value (int)                      | The integer value containing a date that will be added.           |
-                |  Date Format (string)             | Overide decimal separtor in global scope.                         |
-        Example:
+    #     Arguments:
+    #             |  Sheet Name (string)  | The selected sheet that the cell will be modified from.                                                  |
+    #             |  Column (int)         | The column integer value that will be used to modify the cell.                                           |
+    #             |  Row (int)            | The row integer value that will be used to modify the cell.                                              |
+    #             |  Operation (operator) | The operation that will be performed on the value within the cell located by the column and row values.  |
+    #             |  Value (int)          | The integer value that will be used in conjuction with the operation parameter.                          |
+    #     Example:
 
-        | *Keywords*            |  *Parameters*                                                               |
-        | Open Excel            |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |            |
-        | Write Date To Cell    |  TestSheet1                                        |  0  |  0  |  12.3.1999 |
+    #     | *Keywords*           |  *Parameters*                                                               |
+    #     | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |     |      |
+    #     | Modify Cell With     |  TestSheet1                                        |  0  |  0  |  *  |  56  |
 
-        """
-        self.writer.write_date_to_cell(sheet_name, column, row, value, date_format)
-
-    def modify_cell_with(self, sheet_name, column, row, op, val):
-        """
-        Using the sheet name a cell is modified with the given operation and value.
-
-        Arguments:
-                |  Sheet Name (string)  | The selected sheet that the cell will be modified from.                                                  |
-                |  Column (int)         | The column integer value that will be used to modify the cell.                                           |
-                |  Row (int)            | The row integer value that will be used to modify the cell.                                              |
-                |  Operation (operator) | The operation that will be performed on the value within the cell located by the column and row values.  |
-                |  Value (int)          | The integer value that will be used in conjuction with the operation parameter.                          |
-        Example:
-
-        | *Keywords*           |  *Parameters*                                                               |
-        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |     |      |
-        | Modify Cell With     |  TestSheet1                                        |  0  |  0  |  *  |  56  |
-
-        """
-        self.writer.modify_cell_with(sheet_name, column, row, op, val)
-
-    def add_to_date(self, sheet_name, column, row, numdays):
-        """
-        Using the sheet name the number of days are added to the date in the indicated cell.
-
-        Arguments:
-                |  Sheet Name (string)             | The selected sheet that the cell will be modified from.            |
-                |  Column (int)                    | The column integer value that will be used to modify the cell.     |
-                |  Row (int)                       | The row integer value that will be used to modify the cell.        |
-                |  Number of Days (int)            | The integer value is the number of days that will be added.        |
-        Example:
-
-        | *Keywords*           |  *Parameters*                                                        |
-        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |     |
-        | Add To Date          |  TestSheet1                                        |  0  |  0  |  4  |
-
-        """
-        self.writer.add_to_date(sheet_name, column, row, numdays)
-
-    def subtract_from_date(self, sheet_name, column, row, numdays):
-        """
-        Using the sheet name the number of days are subtracted from the date in the indicated cell.
-
-        Arguments:
-                |  Sheet Name (string)             | The selected sheet that the cell will be modified from.            |
-                |  Column (int)                    | The column integer value that will be used to modify the cell.     |
-                |  Row (int)                       | The row integer value that will be used to modify the cell.        |
-                |  Number of Days (int)            | The integer value is the number of days that will be added.        |
-        Example:
-
-        | *Keywords*           |  *Parameters*                                                        |
-        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |     |
-        | Subtract From Date   |  TestSheet1                                        |  0  |  0  |  7  |
-
-        """
-        self.writer.subtract_from_date(sheet_name, column, row, numdays)
+    #     """
+    #     self.writer.modify_cell_with(sheet_name, column, row, op, val)
 
     def save_excel(self):
         """
@@ -345,9 +301,10 @@ class ExcelLibrary:
 
         Example:
 
-        | *Keywords*           |  *Parameters*                                      |
-        | Open Excel To Write  |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
-        | Save Excel           |                                                    |
+        | *Keywords*            |  *Parameters*                                      |
+        | Open Excel To Write   |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |                  |
+        | Write To Cell         |  TestSheet1                                        |  0  |  0  |  34  |
+        | Save Excel            |                                                    |                  |
 
         """
         self.writer.save_excel()
@@ -366,18 +323,3 @@ class ExcelLibrary:
 
         """
         self.writer.create_sheet(sheet_name)
-
-    def create_workbook(self, sheet_name):
-        """
-        Creates a new Excel workbook
-
-        Arguments:
-                |  New Sheet Name (string)  | The name of the new sheet added to the new workbook.  |
-        Example:
-
-        | *Keywords*           |  *Parameters*                                      |
-        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
-        | Create Excel         |  NewExcelSheet                                     |
-
-        """
-        self.writer.create_workbook(sheet_name)

@@ -21,6 +21,7 @@ class ExcelRobot(ExcelLibrary):
         | Library | ExcelRobot |
 
     To setup some Excel configurations related to date format and number format, use these arguments
+    
         *Excel Date Time format*
         | Date Format       | Default: `yyyy-mm-dd`         |
         | Time Format       | Default: `HH:MM:SS AM/PM`     |

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from ExcelRobot.reader import ExcelReader
 from ExcelRobot.utils import DataType
-from nose.tools import assert_in, eq_
+from nose.tools import assert_in, eq_, raises
 from parameterized import parameterized
 
 CURRENT_DIR = path.dirname(path.abspath(__file__))
@@ -18,12 +18,21 @@ DATA_DIR = path.join(CURRENT_DIR, '../data')
 # def teardown_module():
 #     print('Teardown module')
 
+@raises(ValueError)
+def test_open_not_valid():
+    ExcelReader(path.join(DATA_DIR, 'a.txt'))
+
+
+@raises(FileNotFoundError)
+def test_open_not_found():
+    ExcelReader(path.join(DATA_DIR, 'a.xls'))
+
 
 @parameterized([
     ('ExcelRobotTest.xls', 5),
     ('ExcelRobotTest.xlsx', 5)
 ])
-def test_open(input_file, expected):
+def test_open_success(input_file, expected):
     reader = ExcelReader(path.join(DATA_DIR, input_file))
     eq_(expected, reader.get_number_of_sheets())
 
@@ -90,6 +99,7 @@ def test_get_cell_value_by_name(input_file, sheet_name, cell_name, expected):
     ('ExcelRobotTest.xls', 'TestSheet3', 3, 1, DataType.BOOL.name, 'Yes'),
     ('ExcelRobotTest.xls', 'TestSheet3', 6, 1, DataType.NUMBER.name, '7.50'),
     ('ExcelRobotTest.xls', 'TestSheet3', 7, 1, DataType.TIME.name, '08:00:00 AM'),
+    ('ExcelRobotTest.xls', 'TestSheet3', 8, 1, DataType.DATE_TIME.name, '2018-01-02 22:00'),
     ('ExcelRobotTest.xlsx', 'TestSheet1', 0, 1, None, 'User1'),
     ('ExcelRobotTest.xlsx', 'TestSheet1', 1, 1, DataType.NUMBER.name, '57.00'),
     ('ExcelRobotTest.xlsx', 'TestSheet2', 1, 1, DataType.TEXT.name, '23.8.1982'),
@@ -97,10 +107,11 @@ def test_get_cell_value_by_name(input_file, sheet_name, cell_name, expected):
     ('ExcelRobotTest.xlsx', 'TestSheet3', 3, 1, DataType.BOOL.name, 'Yes'),
     ('ExcelRobotTest.xlsx', 'TestSheet3', 6, 1, DataType.NUMBER.name, '7.50'),
     ('ExcelRobotTest.xlsx', 'TestSheet3', 7, 1, DataType.TIME.name, '08:00:00 AM'),
+    ('ExcelRobotTest.xlsx', 'TestSheet3', 8, 1, DataType.DATE_TIME.name, '2018-01-02 22:00'),
 ])
 def test_get_cell_value_by_coord(input_file, sheet_name, col, row, data_type, expected):
     reader = ExcelReader(path.join(DATA_DIR, input_file))
-    eq_(expected, reader.read_cell_data_by_coordinates(sheet_name, col, row, data_type=data_type))
+    eq_(expected, reader.read_cell_data(sheet_name, col, row, data_type=data_type))
 
 
 @parameterized([
@@ -119,7 +130,7 @@ def test_get_cell_value_by_coord(input_file, sheet_name, col, row, data_type, ex
 ])
 def test_get_cell_raw_value_by_coord(input_file, sheet_name, col, row, expected):
     reader = ExcelReader(path.join(DATA_DIR, input_file))
-    eq_(expected, reader.read_cell_data_by_coordinates(sheet_name, col, row, use_format=False))
+    eq_(expected, reader.read_cell_data(sheet_name, col, row, use_format=False))
 
 
 @parameterized([

@@ -14,7 +14,7 @@ Robotframework-excel is a Robot Framework Library that provides keywords to allo
 - xlutils 2.0.0. Access the downloads [here](https://pypi.python.org/pypi/xlutils/1.7.1), or use pip install xlutils.
   - [xlrd](https://pypi.python.org/pypi/xlrd) that reads data from an Excel file
   - [xlwt](https://pypi.python.org/pypi/xlwt) that can write to an Excel file.
-- XlsxWriter 1.0.2
+- openpyxl 1.0.2
 - natsort 5.2.0. Access the downloads [here](https://pypi.python.org/pypi/natsort/5.2.0), or use pip install natsort.
 - enum34 1.1.6
 
@@ -72,7 +72,8 @@ pybot ExcelRobotTest.robot -d "./out"
 
 ## Limitation
 
-- When using the keyword `Add New Sheet` the user cannot perform any functions before or after this keyword on the currently open workbook. The changes that other keywords make will not be saved when the keyword `Add New Sheet` is used. They must add a sheet then save the workbook before using any other keyword. If they want to use any other keywords on the workbbok they must open the workbook again to do so.
+- Lack `DataType` is `CURRENCY` and `PERCENTAGE`
+- Not yet optimize performance when saving Excel file after modifying itself
 
 ## Contribution
 
