@@ -2,6 +2,7 @@ import logging
 
 import openpyxl
 from ExcelRobot.reader import ExcelReader
+from ExcelRobot.six import PY2
 from ExcelRobot.utils import (BoolFormat, DataType, DateFormat, NumberFormat,
                               copy_file, del_file, excel_name2coord,
                               get_file_path, is_file, random_temp_file)
@@ -58,12 +59,13 @@ class ExcelWriter(ExcelReader):
             if self.override:
                 del_file(self.new_path)
             else:
-                raise FileExistsError('File ' + self.new_path + ' already existed. Use `override=True` to force override file')
+                message = 'File ' + self.new_path + ' already existed. Use `override=True` to force override file'
+                raise IOError(message) if PY2 else FileExistsError(message)
         try:
-            super().__init__(file_path, date_format, number_format, bool_format)
+            super(ExcelWriter, self).__init__(file_path, date_format, number_format, bool_format)
             self.writer = XlsWriter(self.workbook) if self.is_xls else XlsxWriter(self.file_path)
             self.is_new = False
-        except FileNotFoundError as _:
+        except (IOError if PY2 else FileNotFoundError) as _:
             LOGGER.debug('Create new Excel file in %s', self.file_path)
             self.writer = XlsWriter() if self.is_xls else XlsxWriter(self.file_path, is_new=True)
             self.is_new = True

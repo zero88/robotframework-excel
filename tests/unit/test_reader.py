@@ -2,6 +2,7 @@
 import os.path as path
 from datetime import datetime
 
+from ExcelRobot.six import PY2
 from ExcelRobot.reader import ExcelReader
 from ExcelRobot.utils import DataType
 from nose.tools import assert_in, eq_, raises
@@ -11,19 +12,12 @@ CURRENT_DIR = path.dirname(path.abspath(__file__))
 DATA_DIR = path.join(CURRENT_DIR, '../data')
 
 
-# def setup_module():
-#     print('Setup module')
-
-
-# def teardown_module():
-#     print('Teardown module')
-
 @raises(ValueError)
 def test_open_not_valid():
     ExcelReader(path.join(DATA_DIR, 'a.txt'))
 
 
-@raises(FileNotFoundError)
+@raises(IOError if PY2 else FileNotFoundError)
 def test_open_not_found():
     ExcelReader(path.join(DATA_DIR, 'a.xls'))
 

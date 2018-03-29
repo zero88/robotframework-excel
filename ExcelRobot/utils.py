@@ -126,7 +126,7 @@ class DateFormat:
         _format = re.sub(r'(?:(?<!%))m{1}', '%-m', _format)
         _format = re.sub(r'(?:(?<!%))d{2}', '%d', _format)
         _format = re.sub(r'(?:(?<!%))d{1}', '%-d', _format)
-        hour_code = 'I' if re.search(r'\b(AM/PM)|(A/P)\b', _format, re.RegexFlag.IGNORECASE) else 'H'
+        hour_code = 'I' if re.search(r'\b(AM/PM)|(A/P)\b', _format, re.IGNORECASE) else 'H'
         _format = re.sub(r'\b(AM/PM)|(A/P)\b', '%p', _format)
         _format = re.sub(r'(?:(?<!%))H{2}', '%' + hour_code, _format)
         _format = re.sub(r'(?:(?<!%))H{1}', '%-' + hour_code, _format)

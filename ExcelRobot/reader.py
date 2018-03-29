@@ -2,6 +2,7 @@ import logging
 from operator import itemgetter
 
 import natsort
+from ExcelRobot.six import PY2
 from ExcelRobot.utils import (BoolFormat, DataType, DateFormat, NumberFormat,
                               excel_name2coord, get_file_path, is_file)
 from xlrd import cellname, open_workbook, xldate
@@ -9,14 +10,14 @@ from xlrd import cellname, open_workbook, xldate
 LOGGER = logging.getLogger(__name__)
 
 
-class ExcelReader:
+class ExcelReader(object):
 
     def __init__(self, file_path, date_format=DateFormat(), number_format=NumberFormat(), bool_format=BoolFormat()):
         self.file_path = get_file_path(file_path)
         LOGGER.info('Opening file at %s', self.file_path)
         if not self.file_path or not is_file(self.file_path):
             self._workbook = None
-            raise FileNotFoundError('Excel file is not found')
+            raise IOError('Excel file is not found') if PY2 else FileNotFoundError('Excel file is not found')
         self._workbook = open_workbook(self.file_path, formatting_info=self.is_xls, on_demand=True)
         self.date_format = date_format
         self.number_format = number_format

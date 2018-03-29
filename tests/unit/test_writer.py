@@ -7,6 +7,7 @@ import shutil
 import tempfile
 from datetime import date, datetime, time
 
+from ExcelRobot.six import PY2
 from ExcelRobot.reader import ExcelReader
 from ExcelRobot.utils import DataType, copy_file, random_name
 from ExcelRobot.writer import ExcelWriter
@@ -38,7 +39,7 @@ def remove_tmp_file():
     os.remove(path.join(TEMP_DIR, 'temp.xls'))
 
 
-@raises(FileExistsError)
+@raises(IOError if PY2 else FileExistsError)
 @with_setup(setup=create_tmp_file, teardown=remove_tmp_file)
 def test_open_without_override():
     ExcelWriter(path.join(DATA_DIR, 'ExcelRobotTest.xls'), new_path=path.join(TEMP_DIR, 'temp.xls'), override=False)
