@@ -2,9 +2,9 @@ import logging
 from operator import itemgetter
 
 import natsort
-from ExcelRobot.six import PY2
 from ExcelRobot.utils import (BoolFormat, DataType, DateFormat, NumberFormat,
                               excel_name2coord, get_file_path, is_file)
+from six import PY2
 from xlrd import cellname, open_workbook, xldate
 
 LOGGER = logging.getLogger(__name__)

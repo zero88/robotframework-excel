@@ -1,3 +1,4 @@
+six>=1.11.0
 natsort>=5.0.0
 xlutils>=2.0.0
 openpyxl>=2.5.0

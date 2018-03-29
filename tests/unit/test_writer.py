@@ -7,12 +7,12 @@ import shutil
 import tempfile
 from datetime import date, datetime, time
 
-from ExcelRobot.six import PY2
 from ExcelRobot.reader import ExcelReader
 from ExcelRobot.utils import DataType, copy_file, random_name
 from ExcelRobot.writer import ExcelWriter
 from nose.tools import assert_in, eq_, raises, with_setup
 from parameterized import parameterized
+from six import PY2
 
 CURRENT_DIR = path.dirname(path.abspath(__file__))
 DATA_DIR = path.join(CURRENT_DIR, '../data')

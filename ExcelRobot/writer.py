@@ -2,10 +2,10 @@ import logging
 
 import openpyxl
 from ExcelRobot.reader import ExcelReader
-from ExcelRobot.six import PY2
 from ExcelRobot.utils import (BoolFormat, DataType, DateFormat, NumberFormat,
                               copy_file, del_file, excel_name2coord,
                               get_file_path, is_file, random_temp_file)
+from six import PY2
 from xlutils.copy import copy
 from xlwt import Workbook, easyxf
 
