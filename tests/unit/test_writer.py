@@ -1,5 +1,5 @@
 
-from __future__ import print_function
+#!/usr/bin/python
 
 import os
 import os.path as path
