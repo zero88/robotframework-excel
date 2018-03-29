@@ -59,8 +59,8 @@ pipeline {
     }
 
     post {
-        // failure {
-        //     // Send mail
-        // }
+        failure {
+            mail to: 'sontt246@gmail.com', subject: 'The Pipeline failed :('
+        }
     }
 }
