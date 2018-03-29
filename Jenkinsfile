@@ -23,8 +23,13 @@ pipeline {
 
             steps {
                 parallel (
-                    'unit tests': { sh 'nosetests tests.unit -v --with-xunit --xunit-file=./out/nosetests.xml -s --debug=ExcelRobot' },
-                    'acceptance tests': { sh 'python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html' }
+                    'unit tests': { 
+                        sh 'mkdir -p ./out/'
+                        sh 'nosetests tests.unit -v --with-xunit --xunit-file=./out/nosetests.xml -s --debug=ExcelRobot'
+                    },
+                    'acceptance tests': { 
+                        sh 'python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html' 
+                    }
                 )
             }
         }
