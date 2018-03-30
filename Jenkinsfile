@@ -28,15 +28,15 @@ pipeline {
                         sh 'nosetests tests.unit -v --with-xunit --xunit-file=./out/nosetests.xml -s --debug=ExcelRobot'
                     },
                     'acceptance': { 
-                        sh 'python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html'
+                        sh 'pybot -d ./out ./tests/acceptance'
                         step([$class: 'RobotPublisher',
                                 disableArchiveOutput: false,
-                                logFileName: 'log.html',
+                                logFileName: './out/log.html',
                                 otherFiles: '',
-                                outputFileName: 'output.xml',
+                                outputFileName: './out/output.xml',
                                 outputPath: '.',
                                 passThreshold: 100,
-                                reportFileName: 'report.html',
+                                reportFileName: './out/report.html',
                                 unstableThreshold: 0])
                     }
                 )
