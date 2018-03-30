@@ -31,12 +31,12 @@ pipeline {
                         sh 'pybot -d ./out ./tests/acceptance'
                         step([$class: 'RobotPublisher',
                                 disableArchiveOutput: false,
-                                logFileName: './out/log.html',
+                                logFileName: "log.html",
                                 otherFiles: '',
-                                outputFileName: './out/output.xml',
-                                outputPath: '.',
+                                outputFileName: "output.xml",
+                                outputPath: '${env.WORKSPACE}/out',
                                 passThreshold: 100,
-                                reportFileName: './out/report.html',
+                                reportFileName: "report.html",
                                 unstableThreshold: 0])
                     }
                 )
@@ -47,13 +47,13 @@ pipeline {
 
     post {
         always {
-            junit './out/nosetests.xml'
+            junit "out/nosetests.xml"
         }
         failure {
             emailext (
-                to: 'sontt246@gmail.com',
-                subject: "${env.JOB_NAME} #${env.BUILD_NUMBER} [${currentBuild.result}]",
-                body: "Build URL: ${env.BUILD_URL}.\n\n",
+                to: "${env.DEFAULT_RECIPIENTS}",
+                subject: "${env.DEFAULT_SUBJECT}",
+                body: "${env.DEFAULT_CONTENT}",
                 attachLog: true,
             )
         }
