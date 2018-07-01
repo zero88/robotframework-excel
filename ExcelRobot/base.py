@@ -3,7 +3,7 @@ from ExcelRobot.utils import BoolFormat, DateFormat, NumberFormat
 from ExcelRobot.writer import ExcelWriter
 
 
-class ExcelLibrary:
+class ExcelLibrary(object):
 
     def __init__(self, date_format=DateFormat(), number_format=NumberFormat(), bool_format=BoolFormat()):
         """
