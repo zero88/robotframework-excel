@@ -4,6 +4,13 @@ import pip
 from setuptools import setup, find_packages
 from os.path import join, dirname
 
+try:  # for pip >= 10
+    from pip._internal.req import parse_requirements
+    from pip._internal import download
+except ImportError:  # for pip <= 9.0.3
+    from pip.req import parse_requirements
+    from pip import download
+
 _PACKAGE = 'ExcelRobot'
 
 sys.path.append(join(dirname(__file__), _PACKAGE))
@@ -30,7 +37,7 @@ def __normalize(req):
 
 
 def __gather_dependencies(require_file):
-    requirements = pip.req.parse_requirements(require_file, session=pip.download.PipSession())
+    requirements = parse_requirements(require_file, session=download.PipSession())
     _reqs, _links = [], []
     for item in requirements:
         has_link = False
@@ -44,6 +51,7 @@ def __gather_dependencies(require_file):
             req = str(item.req)
             _reqs.append(__normalize(req) if has_link else req)
     return _reqs, _links
+
 
 _REQUIRES, _LINKS, = __gather_dependencies('requirements.txt')
 
