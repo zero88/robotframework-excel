@@ -50,8 +50,7 @@ class ExcelRobot(ExcelLibrary):
         logging.getLogger().setLevel(logging.INFO)
         logger = logging.getLogger(__name__)
         logger.info('ExcelRobot::Robotframework Excel Library')
-        # super().__init__(date_format, time_format, datetime_format, decimal_sep, thousand_sep, precision)
-        super().__init__(
+        super(ExcelRobot, self).__init__(
             DateFormat(date_format, time_format, datetime_format),
             NumberFormat(decimal_sep, thousand_sep, precision),
             BoolFormat(bool_format))
