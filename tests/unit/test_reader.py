@@ -2,11 +2,12 @@
 import os.path as path
 from datetime import datetime
 
+from six import PY2
+
 from ExcelRobot.reader import ExcelReader
 from ExcelRobot.utils import DataType
 from nose.tools import assert_in, eq_, raises
 from parameterized import parameterized
-from six import PY2
 
 CURRENT_DIR = path.dirname(path.abspath(__file__))
 DATA_DIR = path.join(CURRENT_DIR, '../data')

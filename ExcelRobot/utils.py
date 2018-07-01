@@ -160,6 +160,7 @@ class DateFormat:
         return self.py_date_format
 
     def format(self, data_type, value):
+        value = value.replace(year=max(1900 if self.datemode == 0 else 1904, value.year))
         return value.strftime(self.get_py_format(data_type))
 
     def parse(self, data_type, value):
