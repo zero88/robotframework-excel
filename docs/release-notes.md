@@ -1,5 +1,9 @@
 # RELEASE NOTE
 
+## Version 1.0.0b4
+
+- Fix `python 2.7` compatibility
+
 ## Version 1.0.0b1 - First Release
 
 - `Open Excel` Opens the Excel file from the path provided in the file name parameter. If the boolean useTempDir is set to true, depending on the operating system of the computer running the test the file will be opened in the Temp directory if the operating system is Windows or tmp directory if it is not.
