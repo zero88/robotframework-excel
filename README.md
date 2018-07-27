@@ -1,5 +1,14 @@
 # Robotframework-excel for Robot Framework
 
+[![Version](https://img.shields.io/pypi/v/robotframework-excel.svg)](https://img.shields.io/pypi/v/robotframework-excel.svg)
+[![License](https://img.shields.io/pypi/l/robotframework-excel.svg)](https://img.shields.io/pypi/l/robotframework-excel.svg)
+[![Status](https://img.shields.io/pypi/status/robotframework-excel.svg)](https://img.shields.io/pypi/status/robotframework-excel.svg)
+[![PyVersion](https://img.shields.io/pypi/pyversions/robotframework-excel.svg)](https://img.shields.io/pypi/pyversions/robotframework-excel.svg)
+
+[![Build Status](https://travis-ci.org/zero-88/robotframework-excel.svg?branch=master)](https://travis-ci.org/zero-88/robotframework-excel)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=robotframework-excel&metric=coverage)](https://sonarcloud.io/component_measures?id=robotframework-excel&metric=coverage)
+[![Quality Status](https://sonarcloud.io/api/project_badges/measure?project=robotframework-excel&metric=alert_status)](https://sonarcloud.io/dashboard?id=robotframework-excel)
+
 ## Introduction
 
 Robotframework-excel is a Robot Framework Library that provides keywords to allow opening, reading, writing and saving Excel files.
