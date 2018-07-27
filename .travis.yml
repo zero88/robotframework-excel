@@ -1,0 +1,20 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.5"
+  - "3.6"
+branches:
+  only:
+  - master
+  - /^(feature|bugfix)\/.*$/
+# command to install dependencies
+install:
+  - pip install -r requirements.test.txt . --upgrade
+# command to run tests
+before_script:
+  - mkdir -p out/unit
+  - mkdir -p out/uat
+script:
+  - nosetests tests.unit -v --with-xunit --xunit-file=out/unit/nosetests.xml -s --debug=ExcelRobot
+  - pybot -d out/uat ./tests/acceptance

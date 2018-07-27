@@ -1,7 +1,9 @@
 *.pyc
-/out
 /dist
 /build
 *egg-info/
+/*out
+.scannerwork
+.coverage
 
 build.md
