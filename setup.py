@@ -69,7 +69,7 @@ setup(
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, <4',
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 2.7",
