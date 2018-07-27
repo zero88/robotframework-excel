@@ -16,6 +16,7 @@ def get_build_stage(docker_image) {
 
             stage("Build") {
                 sh "pip install -r requirements.txt . --upgrade"
+                sh "python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html"
             }
 
         }
@@ -131,23 +132,6 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-
-        stage("Build doc") {
-            when {
-                beforeAgent true
-                expression { BRANCH_NAME ==~ /^master/ }
-                expression { return GO != "false" }
-            }
-            agent {
-                docker {
-                    image "${docker_build}"
-                    reuseNode true 
-                }
-            }
-            steps {
-                sh "python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html"
             }
         }
 
