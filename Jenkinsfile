@@ -2,8 +2,6 @@ library identifier: 'notifications@master', retriever: modernSCM(
   [$class: 'GitSCMSource',
    remote: 'https://github.com/zero-88/jenkins-pipeline-shared.git'])
 
-@Library('emailNotifications') _
-
 def env_dockers = ["python-2.7": ["python:2.7.14-alpine3.7", "py2"], "python-3.6": ["python:3.6.4-alpine3.7", "py3"]]
 def docker_build = "python:3.6.4-alpine3.7"
 def envs = ["python-2.7", "python-3.6"]
@@ -18,7 +16,6 @@ def get_build_stage(docker_image) {
 
             stage("Build") {
                 sh "pip install -r requirements.txt . --upgrade"
-                sh "python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html"
             }
 
         }
@@ -70,6 +67,14 @@ pipeline {
                         echo ("This build should be skipped. Aborting.")
                         GO = "false"
                     }
+                }
+            }
+        }
+
+        stage ("Version") {
+            agent { docker "${docker_build}" }
+            steps {
+                script {
                     VERSION = sh(script: 'python ExcelRobot/version.py', returnStdout: true).trim()
                 }
             }
@@ -78,9 +83,8 @@ pipeline {
         stage("Build") {
             when {
                 beforeAgent true
-                expression { BRANCH_NAME ==~ /^master|(feature|bugfix)\/.*/ }
+                expression { BRANCH_NAME ==~ /^master|v.+|(feature|bugfix)\/.*/ }
                 expression { return GO != "false" }
-                tag "v*"
             }
             steps {
                 script {
@@ -96,9 +100,8 @@ pipeline {
         stage("Test") {
             when {
                 beforeAgent true
-                expression { BRANCH_NAME ==~ /^master|(feature|bugfix)\/.*/ }
+                expression { BRANCH_NAME ==~ /^master|v.+|(feature|bugfix)\/.*/ }
                 expression { return GO != "false" }
-                tag "v*"
             }
             steps {
                 script {
@@ -131,12 +134,28 @@ pipeline {
             }
         }
 
+        stage("Build doc") {
+            when {
+                beforeAgent true
+                expression { BRANCH_NAME ==~ /^master/ }
+                expression { return GO != "false" }
+            }
+            agent {
+                docker {
+                    image "${docker_build}"
+                    reuseNode true 
+                }
+            }
+            steps {
+                sh "python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html"
+            }
+        }
+
         stage("Analysis") {
             when {
                 beforeAgent true
-                expression { BRANCH_NAME ==~ /^master|(feature|bugfix)\/.*/ }
+                expression { BRANCH_NAME ==~ /^master|v.+|(feature|bugfix)\/.*/ }
                 expression { return GO != "false" }
-                tag "v*"
             }
             agent {
                 docker {
@@ -181,11 +200,10 @@ pipeline {
     post {
         success {
             script {
-                echo "${BRANCH_NAME}"
-                if (BRANCH_NAME ==~ /^master|(feature|bugfix)\/.*/ && GO != "false") {
+                if (BRANCH_NAME ==~ /^master/ && GO != "false") {
                     sshagent (credentials: ['cibot']) {
                         sh 'git add docs/ExcelRobot.html'
-                        sh 'git diff-index --quiet HEAD || git commit -m "[ci skip]"'
+                        sh 'git diff-index --quiet HEAD || git commit -m "[ci skip] Generate doc"'
                         sh "git push origin HEAD:${BRANCH_NAME}"
                     }
                 }
