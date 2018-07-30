@@ -68,15 +68,7 @@ pipeline {
                         echo ("This build should be skipped. Aborting.")
                         GO = "false"
                     }
-                }
-            }
-        }
-
-        stage ("Version") {
-            agent { docker "${docker_build}" }
-            steps {
-                script {
-                    VERSION = sh(script: 'python ExcelRobot/version.py', returnStdout: true).trim()
+                    VERSION = sh(script: "cat ExcelRobot/version.py | grep VERSION | awk '{print \$3}' | sed s/\'//g  | sed s/\"//g", returnStdout: true).trim()
                 }
             }
         }
