@@ -68,7 +68,7 @@ pipeline {
                         echo ("This build should be skipped. Aborting.")
                         GO = "false"
                     }
-                    VERSION = sh(script: "cat ExcelRobot/version.py | grep VERSION | awk '{print \$3}' | sed s/\'//g  | sed s/\"//g", returnStdout: true).trim()
+                    VERSION = sh(script: "cat ExcelRobot/version.py | grep VERSION | awk '{print \$3}' | sed \"s/\'//g\"  | sed \"s/\\\"//g\"", returnStdout: true).trim()
                 }
             }
         }
