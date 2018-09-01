@@ -13,8 +13,8 @@ Library Version
 **To Reproduce**
 Steps to reproduce the behavior:
 
-**To Reproduce**
-Steps to reproduce the behavior:
+**Exception Log**
+Any log of exception via console, file, etc
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
