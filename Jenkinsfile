@@ -141,12 +141,12 @@ pipeline {
                 }
             }
             steps {
-                sh 'curl -L https://github.com/SonarSource/sonar-scanner-cli/archive/3.3.0.1492.zip -o /tmp/sonar-scanner.zip'
+                sh 'curl -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip -o /tmp/sonar-scanner.zip'
                 sh 'unzip /tmp/sonar-scanner.zip -d /tmp/'
                 script {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                         sh "set +x"
-                        sh "/tmp/sonar-scanner-3.2.0.1227/bin/sonar-scanner -Dsonar.projectVersion=${VERSION} -Dsonar.python.xunit.reportPath=${analysis_dir}/unit/nosetests.xml -Dsonar.python.coverage.reportPath=${analysis_dir}/coverage/coverage.xml -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${SONAR_TOKEN}"
+                        sh "/tmp/sonar-scanner-*/bin/sonar-scanner -Dsonar.projectVersion=${VERSION} -Dsonar.python.xunit.reportPath=${analysis_dir}/unit/nosetests.xml -Dsonar.python.coverage.reportPath=${analysis_dir}/coverage/coverage.xml -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${SONAR_TOKEN}"
                     }
                 }
             }
