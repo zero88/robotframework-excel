@@ -39,7 +39,8 @@ def get_test_stage(docker_image, out) {
             }
 
             stage("Acceptance Test") {
-                sh "coverage run -a --source ExcelRobot -m robot.run -d ${out}/uat ./tests/acceptance"
+                sh "coverage run -a --source ExcelRobot -m robot.run -d ${out}/uat/xls -L DEBUG -v type:xls ./tests/acceptance"
+                sh "coverage run -a --source ExcelRobot -m robot.run -d ${out}/uat/xlsx -L DEBUG -v type:xlsx ./tests/acceptance"
             }
 
             stage("Coverage") {
@@ -113,12 +114,12 @@ pipeline {
                             junit "${out}/unit/nosetests.xml"
                             step([$class: "RobotPublisher",
                                         disableArchiveOutput: false,
-                                        logFileName: "log.html",
                                         otherFiles: "",
-                                        outputFileName: "output.xml",
+                                        outputFileName  : "**/output.xml",
+                                        reportFileName  : '**/report.html',
+                                        logFileName     : '**/log.html',
                                         outputPath: "${out}/uat",
                                         passThreshold: 100,
-                                        reportFileName: "report.html",
                                         unstableThreshold: 0])
                             zip archive: true, dir: "${out}", zipFile: "dist/test-${out}.zip"
                         }

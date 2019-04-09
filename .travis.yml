@@ -20,4 +20,5 @@ before_script:
   - mkdir -p out/uat
 script:
   - nosetests tests.unit -v --with-xunit --xunit-file=out/unit/nosetests.xml -s --debug=ExcelRobot
-  - pybot -d out/uat ./tests/acceptance
+  - pybot -L DEBUG -d out/uat -v type:xls ./tests/acceptance
+  - pybot -L DEBUG -d out/uat -v type:xlsx ./tests/acceptance
