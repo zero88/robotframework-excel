@@ -2,9 +2,9 @@ library identifier: 'notifications@master', retriever: modernSCM(
   [$class: 'GitSCMSource',
    remote: 'https://github.com/zero-88/jenkins-pipeline-shared.git'])
 
-def env_dockers = ["python-2.7": ["python:2.7.14-alpine3.7", "py2"], "python-3.6": ["python:3.6.4-alpine3.7", "py3"]]
-def docker_build = "python:3.6.4-alpine3.7"
-def envs = ["python-2.7", "python-3.6"]
+def env_dockers = ["python-2.7": ["python:2.7.16-alpine3.9", "py2"], "python-3.7": ["python:3.7.3-alpine3.9", "py3"]]
+def docker_build = "python:3.7.3-alpine3.9"
+def envs = ["python-2.7", "python-3.7"]
 def analysis_dir = "py3-out"
 
 def get_build_stage(docker_image) {
@@ -141,7 +141,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'curl -L https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227.zip -o /tmp/sonar-scanner.zip'
+                sh 'curl -L https://github.com/SonarSource/sonar-scanner-cli/archive/3.3.0.1492.zip -o /tmp/sonar-scanner.zip'
                 sh 'unzip /tmp/sonar-scanner.zip -d /tmp/'
                 script {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
