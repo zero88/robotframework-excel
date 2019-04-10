@@ -6,26 +6,31 @@ Suite Setup         Init Test
 *** Variables ***
 ${Names}
 ${Num}
-# ${Excel_File}     ExcelRobotTest.xlsx
-${Excel_File}       ExcelRobotTest.xls
-# ${Excel_File}     a.txt
+${Excel_File}       ExcelRobotTest
+${xlsx}             xlsx
+${xls}              xls
+${type}             ${xlsx}
 ${Test_Data_Path}   ${CURDIR}${/}..${/}data${/}
 ${Out_Data_Path}    ${TEMPDIR}${/}excelrobot${/}
 ${SheetName}        Graph Data
 ${NewSheetName}     NewSheet
+${NewSheetName}     NewSheet
 
 *** Test Cases ***
 Read Excel
-    Get Values
+    Get Values          excel_type=${type}
 
 Write Excel 1
-    Create New Excel
+    Create New Excel    excel_type=${type}
 
 Write Excel 2
-    Create Excel From Existing File
+    Create Excel From Existing File      excel_type=${type}
 
 Write Excel 3
-    Create New Sheet
+    Create New Sheet     excel_type=${type}
+
+Write Excel 4
+    Write New Value      excel_type=${type}
 
 *** Keywords ***
 Init Test
@@ -34,7 +39,8 @@ Init Test
     Copy Files          ${Test_Data_Path}${/}*  ${Out_Data_Path}
 
 Get Values
-    Open Excel     ${Out_Data_Path}${Excel_File}
+    [Arguments]    ${excel_type}
+    Open Excel     ${Out_Data_Path}${Excel_File}.${excel_type}
     ${Names}=      Get Sheet Names
     Set Suite Variable   ${Names}
     ${Num}=        Get Number of Sheets
@@ -53,14 +59,27 @@ Get Values
 
 
 Create Excel From Existing File
-    Open Excel To Write     ${Out_Data_Path}${Excel_File}  ${Out_Data_Path}Clone_${Excel_File}   True
+    [Arguments]    ${excel_type}
+    Open Excel To Write     ${Out_Data_Path}${Excel_File}.${excel_type}  ${Out_Data_Path}Clone_${Excel_File}.${excel_type}   True
     Save Excel
 
 Create New Excel
-    Open Excel To Write     ${Out_Data_Path}NewExcelSheet.xls
+    [Arguments]    ${excel_type}
+    Open Excel To Write     ${Out_Data_Path}NewExcelSheet.${excel_type}
     Save Excel
 
 Create New Sheet
-    Open Excel To Write     ${Out_Data_Path}NewExcelSheet.xls
+    [Arguments]    ${excel_type}
+    Open Excel To Write     ${Out_Data_Path}NewExcelSheet.${excel_type}
     Create Sheet            ${NewSheetName}
+    Save Excel
+
+Write New Value
+    [Arguments]    ${excel_type}
+    Open Excel To Write     ${Out_Data_Path}WriteExcelSheet.${excel_type}
+    Create Sheet            ${NewSheetName}
+    Write To Cell By Name   ${NewSheetName}     A1   abc
+    Write To Cell By Name   ${NewSheetName}     A2   34
+    Write To Cell By Name   ${NewSheetName}     A3   True
+    Write To Cell           ${NewSheetName}     0       4       xx      TEXT
     Save Excel

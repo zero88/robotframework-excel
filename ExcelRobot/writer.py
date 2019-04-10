@@ -23,8 +23,14 @@ class XlsWriter:
         self.wwb.add_sheet(sheet_name)
 
     def write_to_cell(self, sheet_name, column, row, value, data_format=None):
+        LOGGER.info('XLS Writer...')
         sheet = self.wwb.get_sheet(sheet_name)
-        sheet.write(row, column, label=value, style=easyxf('', num_format_str=data_format))
+        LOGGER.debug('Sheet %s', sheet_name)
+        LOGGER.debug('column %s', column)
+        LOGGER.debug('row %s', row)
+        LOGGER.debug('Type value %s', type(value))
+        LOGGER.debug('Data format %s', str(data_format))
+        sheet.write(int(row), int(column), label=value, style=easyxf('', num_format_str=data_format))
 
     def save(self, new_path):
         self.wwb.save(new_path)
@@ -39,8 +45,14 @@ class XlsxWriter:
         self.wwb.create_sheet(title=sheet_name)
 
     def write_to_cell(self, sheet_name, column, row, value, data_format=None):
+        LOGGER.info('XLSX Writer...')
         sheet = self.wwb[sheet_name]
-        cell = sheet.cell(row + 1, column + 1, value)
+        LOGGER.debug('Sheet %s', sheet_name)
+        LOGGER.debug('column %s', column)
+        LOGGER.debug('row %s', row)
+        LOGGER.debug('Type value %s', type(value))
+        LOGGER.debug('Data format %s', str(data_format))
+        cell = sheet.cell(row=int(row) + 1, column=int(column) + 1, value=value)
         if data_format:
             cell.number_format = data_format
 

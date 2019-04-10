@@ -2,13 +2,17 @@ language: python
 python:
   - "2.7"
   - "3.3"
-  - "3.4"
   - "3.5"
   - "3.6"
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
 branches:
   only:
-  - master
-  - /^(feature|bugfix)\/.*$/
+    - master
+    - /^(feature|bugfix)\/.*$/
 before_install:
   - "[[ $(python -V 2>&1 | grep -Po '(?<=Python )(.+)') == 3.4* ]] && pip install setuptools --upgrade || echo 'continue'"
 # command to install dependencies
@@ -20,4 +24,5 @@ before_script:
   - mkdir -p out/uat
 script:
   - nosetests tests.unit -v --with-xunit --xunit-file=out/unit/nosetests.xml -s --debug=ExcelRobot
-  - pybot -d out/uat ./tests/acceptance
+  - robot -L DEBUG -d out/uat -v type:xls ./tests/acceptance
+  - robot -L DEBUG -d out/uat -v type:xlsx ./tests/acceptance
