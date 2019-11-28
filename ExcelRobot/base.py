@@ -245,7 +245,7 @@ class ExcelLibrary(object):
         Example:
 
         | *Keywords*            |  *Parameters*                                                                     |
-        | Open Excel            |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |                      |       |
+        | Open Excel To Write   |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |                      |       |
         | Write To Cell By Name |  TestSheet1                                        |  A1  |  34           |       |
         | Write To Cell By Name |  TestSheet1                                        |  A2  |  2018-03-29   | DATE  |
         | Write To Cell By Name |  TestSheet1                                        |  A3  |  YES          | BOOL  |
@@ -268,7 +268,7 @@ class ExcelLibrary(object):
         Example:
 
         | *Keywords*            |  *Parameters*                                                                 |
-        | Open Excel            |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |              |       |
+        | Open Excel To Write   |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |     |     |              |       |
         | Write To Cell         |  TestSheet1                                        |  0  |  0  |  34          |       |
         | Write To Cell         |  TestSheet1                                        |  1  |  1  |  2018-03-29  | DATE  |
         | Write To Cell         |  TestSheet1                                        |  2  |  2  |  YES         | BOOL  |
@@ -318,7 +318,7 @@ class ExcelLibrary(object):
         Example:
 
         | *Keywords*           |  *Parameters*                                      |
-        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
+        | Open Excel To Write  |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
         | Create Sheet         |  NewSheet                                          |
 
         """
