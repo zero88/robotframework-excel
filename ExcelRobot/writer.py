@@ -22,6 +22,9 @@ class XlsWriter:
     def create_sheet(self, sheet_name):
         self.wwb.add_sheet(sheet_name)
 
+    def remove_sheet(self, sheet_name):
+        self.wwb.remove_sheet(sheet_name)
+
     def write_to_cell(self, sheet_name, column, row, value, data_format=None):
         LOGGER.info('XLS Writer...')
         sheet = self.wwb.get_sheet(sheet_name)
@@ -43,6 +46,10 @@ class XlsxWriter:
 
     def create_sheet(self, sheet_name):
         self.wwb.create_sheet(title=sheet_name)
+    
+    def remove_sheet(self, sheet_name):
+        self.wwb.remove_sheet(sheet_name)
+
 
     def write_to_cell(self, sheet_name, column, row, value, data_format=None):
         LOGGER.info('XLSX Writer...')
@@ -98,6 +105,12 @@ class ExcelWriter(ExcelReader):
         Creates and appends new Excel worksheet using the new sheet name to the current workbook.
         """
         self.writer.create_sheet(sheet_name)
+    
+    def remove_sheet(self, sheet_name):
+        """
+        Removes Excel worksheet by name.
+        """
+        self.writer.remove_sheet(sheet_name)
 
     def write_to_cell_by_name(self, sheet_name, cell_name, value, data_type=None):
         col, row = excel_name2coord(cell_name)
