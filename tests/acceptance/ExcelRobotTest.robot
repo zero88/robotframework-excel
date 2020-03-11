@@ -32,6 +32,9 @@ Write Excel 3
 Write Excel 4
     Write New Value      excel_type=${type}
 
+Remove SheetName
+    Create Excel From Existing File and Remove First Sheet      excel_type=${type}
+
 *** Keywords ***
 Init Test
     Wait Until Keyword Succeeds     3x      2sec    Remove Directory    ${Out_Data_Path}    True
@@ -82,4 +85,11 @@ Write New Value
     Write To Cell By Name   ${NewSheetName}     A2   34
     Write To Cell By Name   ${NewSheetName}     A3   True
     Write To Cell           ${NewSheetName}     0       4       xx      TEXT
+    Save Excel
+
+Create Excel From Existing File and Remove First Sheet
+    [Arguments]    ${excel_type}
+    Open Excel To Write     ${Out_Data_Path}${Excel_File}.${excel_type}  ${Out_Data_Path}Clone_Remove_${Excel_File}.${excel_type}   True
+    ${list of names}        Get Sheet Names
+    Remove Sheet            ${list of names[0]}
     Save Excel
