@@ -23,7 +23,7 @@ class XlsWriter:
         self.wwb.add_sheet(sheet_name)
 
     def remove_sheet(self, sheet_name):
-        self.wwb.remove_sheet(sheet_name)
+        self.wwb.remove_sheet(self.wwb.get_sheet_by_name(sheet_name))
 
     def write_to_cell(self, sheet_name, column, row, value, data_format=None):
         LOGGER.info('XLS Writer...')
@@ -48,7 +48,7 @@ class XlsxWriter:
         self.wwb.create_sheet(title=sheet_name)
     
     def remove_sheet(self, sheet_name):
-        self.wwb.remove_sheet(sheet_name)
+        self.wwb.remove_sheet(self.wwb.get_sheet_by_name(sheet_name))
 
 
     def write_to_cell(self, sheet_name, column, row, value, data_format=None):
