@@ -13,7 +13,7 @@
 
 Robotframework-excel is a Robot Framework Library that provides keywords to allow opening, reading, writing and saving Excel files.
 
-- Information about Robotframework-excel keywords can be found on the [ExcelRobot-Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot.html) page.
+- Information about Robotframework-excel keywords can be found on the [ExcelRobot-Keyword Documentation](https://zero88.github.io/robotframework-excel/docs/ExcelRobot.html) page.
 - Information about working with Excel files in Python can be found on the [Python Excel](http://www.python-excel.org/) page.
 
 ## Requirements
@@ -67,7 +67,7 @@ See [Robot Framework User Guide](http://code.google.com/p/robotframework/wiki/Us
 
 The test file `ExcelRobotTest.robot`, is an easily executable test for Robot Framework using Robotframework-excel.
 
-For in depth detail on how the keywords function, read the Keyword documentation found here : [Keyword Documentation](https://zero-88.github.io/robotframework-excel/docs/ExcelRobot.html)
+For in depth detail on how the keywords function, read the Keyword documentation found here : [Keyword Documentation](https://zero88.github.io/robotframework-excel/docs/ExcelRobot.html)
 
 Open a command prompt within the `tests/acceptance` folder and run:
 
@@ -77,7 +77,7 @@ pybot ExcelRobotTest.robot -d "./out"
 
 ## Release Note
 
-[Release Note Documentation](https://zero-88.github.io/robotframework-excel/docs/release-notes.md)
+[Release Note Documentation](https://zero88.github.io/robotframework-excel/docs/release-notes.md)
 
 ## Limitation
 
