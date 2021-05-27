@@ -15,8 +15,7 @@ class ExcelLibrary(object):
         self.date_format = date_format
         self.number_format = number_format
         self.bool_format = bool_format
-        self.reader = None
-        self.writer = None
+        self.active = None
 
     def open_excel(self, file_path):
         """
@@ -30,7 +29,7 @@ class ExcelLibrary(object):
         | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
 
         """
-        self.reader = ExcelReader(file_path, self.date_format, self.number_format, self.bool_format)
+        self.active = ExcelReader(file_path, self.date_format, self.number_format, self.bool_format)
 
     def open_excel_to_write(self, file_path, new_path=None, override=False):
         """
@@ -47,7 +46,7 @@ class ExcelLibrary(object):
         | Open Excel To Write       |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xls  |
 
         """
-        self.writer = ExcelWriter(file_path, new_path, override, self.date_format, self.number_format, self.bool_format)
+        self.active = ExcelWriter(file_path, new_path, override, self.date_format, self.number_format, self.bool_format)
 
     def get_sheet_names(self):
         """
@@ -60,7 +59,7 @@ class ExcelLibrary(object):
         | Get Sheets Names        |                                                    |
 
         """
-        return self.reader.get_sheet_names()
+        return self.active.get_sheet_names()
 
     def get_number_of_sheets(self):
         """
@@ -73,7 +72,7 @@ class ExcelLibrary(object):
         | Get Number of Sheets    |                                                    |
 
         """
-        return self.reader.get_number_of_sheets()
+        return self.active.get_number_of_sheets()
 
     def get_column_count(self, sheet_name):
         """
@@ -88,7 +87,7 @@ class ExcelLibrary(object):
         | Get Column Count    |  TestSheet1                                        |
 
         """
-        return self.reader.get_column_count(sheet_name)
+        return self.active.get_column_count(sheet_name)
 
     def get_row_count(self, sheet_name):
         """
@@ -103,7 +102,7 @@ class ExcelLibrary(object):
         | Get Row Count       |  TestSheet1                                        |
 
         """
-        return self.reader.get_row_count(sheet_name)
+        return self.active.get_row_count(sheet_name)
 
     def get_column_values(self, sheet_name, column, include_empty_cells=True):
         """
@@ -120,7 +119,7 @@ class ExcelLibrary(object):
         | Get Column Values    |  TestSheet1                                        | 0 |
 
         """
-        return self.reader.get_column_values(sheet_name, column, include_empty_cells)
+        return self.active.get_column_values(sheet_name, column, include_empty_cells)
 
     def get_row_values(self, sheet_name, row, include_empty_cells=True):
         """
@@ -137,7 +136,7 @@ class ExcelLibrary(object):
         | Get Row Values       |  TestSheet1                                        | 0 |
 
         """
-        return self.reader.get_row_values(sheet_name, row, include_empty_cells)
+        return self.active.get_row_values(sheet_name, row, include_empty_cells)
 
     def get_sheet_values(self, sheet_name, include_empty_cells=True):
         """
@@ -153,7 +152,7 @@ class ExcelLibrary(object):
         | Get Sheet Values     |  TestSheet1                                        |
 
         """
-        return self.reader.get_sheet_values(sheet_name, include_empty_cells)
+        return self.active.get_sheet_values(sheet_name, include_empty_cells)
 
     def get_workbook_values(self, include_empty_cells=True):
         """
@@ -168,7 +167,7 @@ class ExcelLibrary(object):
         | Get Workbook Values  |                                                    |
 
         """
-        return self.reader.get_workbook_values(include_empty_cells)
+        return self.active.get_workbook_values(include_empty_cells)
 
     def read_cell_data_by_name(self, sheet_name, cell_name, data_type=None, use_format=True):
         """
@@ -189,7 +188,7 @@ class ExcelLibrary(object):
         | Read Cell Data By Name    |  TestSheet1                                        |  A2  |
 
         """
-        return self.reader.read_cell_data_by_name(sheet_name, cell_name, data_type, use_format)
+        return self.active.read_cell_data_by_name(sheet_name, cell_name, data_type, use_format)
 
     def read_cell_data(self, sheet_name, column, row, data_type=None, use_format=True):
         """
@@ -211,7 +210,7 @@ class ExcelLibrary(object):
         | Read Cell Data    |  TestSheet1                                        | 0 | 0 |
 
         """
-        return self.reader.read_cell_data(sheet_name, column, row, data_type, use_format)
+        return self.active.read_cell_data(sheet_name, column, row, data_type, use_format)
 
     def check_cell_type(self, sheet_name, column, row, data_type):
         """
@@ -229,7 +228,7 @@ class ExcelLibrary(object):
         | Check Cell Type      |  TestSheet1                                        | 0 | 0 | DATE  |
 
         """
-        return self.reader.check_cell_type(sheet_name, column, row, data_type)
+        return self.active.check_cell_type(sheet_name, column, row, data_type)
 
     def write_to_cell_by_name(self, sheet_name, cell_name, value, data_type=None):
         """
@@ -251,7 +250,7 @@ class ExcelLibrary(object):
         | Write To Cell By Name |  TestSheet1                                        |  A3  |  YES          | BOOL  |
 
         """
-        self.writer.write_to_cell_by_name(sheet_name, cell_name, value, data_type)
+        self.active.write_to_cell_by_name(sheet_name, cell_name, value, data_type)
 
     def write_to_cell(self, sheet_name, column, row, value, data_type=None):
         """
@@ -274,7 +273,7 @@ class ExcelLibrary(object):
         | Write To Cell         |  TestSheet1                                        |  2  |  2  |  YES         | BOOL  |
 
         """
-        self.writer.write_to_cell(sheet_name, column, row, value, data_type)
+        self.active.write_to_cell(sheet_name, column, row, value, data_type)
 
     # def modify_cell_with(self, sheet_name, column, row, op, val):
     #     """
@@ -293,7 +292,7 @@ class ExcelLibrary(object):
     #     | Modify Cell With     |  TestSheet1                                        |  0  |  0  |  *  |  56  |
 
     #     """
-    #     self.writer.modify_cell_with(sheet_name, column, row, op, val)
+    #     self.active.modify_cell_with(sheet_name, column, row, op, val)
 
     def save_excel(self):
         """
@@ -307,7 +306,7 @@ class ExcelLibrary(object):
         | Save Excel            |                                                    |                  |
 
         """
-        self.writer.save_excel()
+        self.active.save_excel()
 
     def create_sheet(self, sheet_name):
         """
@@ -322,4 +321,18 @@ class ExcelLibrary(object):
         | Create Sheet         |  NewSheet                                          |
 
         """
-        self.writer.create_sheet(sheet_name)
+        self.active.create_sheet(sheet_name)
+
+    def remove_sheet(self, sheet_name):
+        """
+        Removes Excel worksheet by name.
+        Arguments:
+                |  Sheet name (string)  | The name of the Sheet    |
+        Example:
+
+        | *Keywords*           |  *Parameters*                                      |
+        | Open Excel           |  C:\\Python27\\ExcelRobotTest\\ExcelRobotTest.xlsx |
+        | Remove Sheet         |  TestSheet1                                          |
+
+        """
+        self.active.remove_sheet(sheet_name)

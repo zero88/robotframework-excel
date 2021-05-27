@@ -2,14 +2,8 @@ import sys
 import re
 import pip
 from setuptools import setup, find_packages
-from os.path import join, dirname
+from os.path import abspath, join, dirname
 
-try:  # for pip >= 10
-    from pip._internal.req import parse_requirements
-    from pip._internal import download
-except ImportError:  # for pip <= 9.0.3
-    from pip.req import parse_requirements
-    from pip import download
 
 _PACKAGE = 'ExcelRobot'
 
@@ -29,27 +23,10 @@ from Robot Framework.
 _URL = 'https://github.com/zero-88/robotframework-excel'
 _DOWNLOAD_URL = _URL + '/tarball/' + VERSION
 
-
-def __normalize(req):
-    # Strip off -dev, -0.2, etc.
-    match = re.search(r'^(.*?)(?:-dev|-\d.*)$', req)
-    return match.group(1) if match else req
-
-
 def __gather_dependencies(require_file):
-    requirements = parse_requirements(require_file, session=download.PipSession())
-    _reqs, _links = [], []
-    for item in requirements:
-        has_link = False
-        if getattr(item, 'url', None):
-            _links.append(str(item.url))
-            has_link = True
-        if getattr(item, 'link', None):
-            _links.append(str(item.link))
-            has_link = True
-        if item.req:
-            req = str(item.req)
-            _reqs.append(__normalize(req) if has_link else req)
+    with open(join(dirname(abspath(__file__)), 'requirements.txt')) as f:
+        _reqs = f.read().splitlines()
+    _links = []
     return _reqs, _links
 
 
