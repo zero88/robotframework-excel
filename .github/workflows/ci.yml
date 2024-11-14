@@ -63,7 +63,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ matrix.python }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: |
@@ -71,7 +71,7 @@ jobs:
 
       - name: Unit test
         run: |
-          poetry run nosetests tests.unit -v --with-xunit --xunit-file=out/unit/nosetests.xml -s --debug=ExcelRobot
+          poetry run pytest -v
 
       - name: UAT test
         if: always()
