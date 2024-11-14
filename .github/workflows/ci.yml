@@ -1,0 +1,99 @@
+name: ci-pipeline
+
+on:
+  create:
+    branches: [ release/** ]
+  push:
+    branches:
+      - main
+      - hotfix/**
+    tags: [ 'v*' ]
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/*.yml'
+      - '*.md'
+      - 'LICENSE'
+  pull_request:
+    types: [ opened, synchronize, reopened, closed ]
+    branches:
+      - main
+      - hotfix/**
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/*.yml'
+      - '*.md'
+      - 'LICENSE'
+
+jobs:
+  context:
+    uses: zero88/shared-ghactions/.github/workflows/project-context.yml@main
+    with:
+      profile: 'robotframework-excel'
+    secrets:
+      githubToken: ${{ secrets.OSS_GITHUB_TOKEN }}
+      gpgKey: ${{ secrets.CI_GPG_PRIVATE_KEY }}
+      gpgPassphrase: ${{ secrets.CI_GPG_PASSPHARSE }}
+      gpgFingerprint: ${{ secrets.CI_GPG_SUBKEY_FINGERPRINT }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.shouldBuild == 'true'
+    strategy:
+      matrix:
+#        python: [ '3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12' ]
+        python: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
+        poetry: [ '1.8.4' ]
+        os: [ 'ubuntu-latest', 'windows-latest' ]
+      fail-fast: false
+    name: With Python-${{ matrix.python }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install and setup poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 - --version ${{ matrix.poetry }}
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --with test
+
+      - name: Unit test
+        run: |
+          poetry run nosetests tests.unit -v --with-xunit --xunit-file=out/unit/nosetests.xml -s --debug=ExcelRobot
+
+      - name: UAT test
+        if: always()
+        run: |
+          poetry run robot -L DEBUG -d out/uat -v type:xls  ./tests/acceptance
+          poetry run robot -L DEBUG -d out/uat -v type:xlsx ./tests/acceptance
+
+      - name: Generate doc
+        if: always()
+        run: |
+          poetry run python -m robot.libdoc -f html ExcelRobot/ ./docs/ExcelRobot.html
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [ context, build ]
+    if: needs.context.outputs.isRelease == 'true'
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: Release 'robotframework-excel' ${{ needs.context.outputs.version }}
+          tag_name: ${{ needs.context.outputs.branch }}
+          generate_release_notes: true
