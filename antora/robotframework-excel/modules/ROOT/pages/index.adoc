@@ -1,12 +1,12 @@
 = Robotframework-Excel
-:navtitle: Robotframework-Excel
+:navtitle: Introduction
 
 image:https://img.shields.io/pypi/v/robotframework-excel.svg[Version,link=https://img.shields.io/pypi/v/robotframework-excel.svg]
 image:https://img.shields.io/pypi/l/robotframework-excel.svg[License,link=https://img.shields.io/pypi/l/robotframework-excel.svg]
 image:https://img.shields.io/pypi/status/robotframework-excel.svg[Status,link=https://img.shields.io/pypi/status/robotframework-excel.svg]
 image:https://img.shields.io/pypi/pyversions/robotframework-excel.svg[PyVersion,link=https://img.shields.io/pypi/pyversions/robotframework-excel.svg]
 
-image:https://travis-ci.org/zero-88/robotframework-excel.svg?branch=master[Build Status,link=https://travis-ci.org/zero-88/robotframework-excel]
+image:https://github.com/zero88/robotframework-excel/actions/workflows/ci.yml/badge.svg?branch=main[build,link=https://github.com/zero88/robotframework-excel/actions/workflows/ci.yml]
 image:https://sonarcloud.io/api/project_badges/measure?project=robotframework-excel&metric=coverage[Coverage,link=https://sonarcloud.io/component_measures?id=robotframework-excel&metric=coverage]
 image:https://sonarcloud.io/api/project_badges/measure?project=robotframework-excel&metric=alert_status[Quality Status,link=https://sonarcloud.io/dashboard?id=robotframework-excel]
 
@@ -14,7 +14,7 @@ image:https://sonarcloud.io/api/project_badges/measure?project=robotframework-ex
 
 Robotframework-excel is a Robot Framework Library that provides keywords to allow opening, reading, writing and saving Excel files.
 
-* Information about Robotframework-excel keywords can be found on the https://zero88.github.io/robotframework-excel/docs/ExcelRobot.html[ExcelRobot-Keyword Documentation] page.
+* Information about Robotframework-excel keywords can be found on the xref:attachment$keywords/ExcelRobot.html[ExcelRobot-Keyword Documentation,window=_blank] page.
 * Information about working with Excel files in Python can be found on the http://www.python-excel.org/[Python Excel] page.
 
 == Requirements
@@ -71,7 +71,7 @@ See http://code.google.com/p/robotframework/wiki/UserGuide[Robot Framework User 
 
 The test file `ExcelRobotTest.robot`, is an easily executable test for Robot Framework using Robotframework-excel.
 
-For in depth detail on how the keywords function, read the Keyword documentation found here : https://zero88.github.io/robotframework-excel/docs/ExcelRobot.html[Keyword Documentation]
+For in depth detail on how the keywords function, read the Keyword documentation found here : xref:attachment$keywords/ExcelRobot.html[Keyword Documentation,window=_blank]
 
 Open a command prompt within the `tests/acceptance` folder and run:
 
@@ -79,10 +79,6 @@ Open a command prompt within the `tests/acceptance` folder and run:
 ----
 pybot ExcelRobotTest.robot -d "./out"
 ----
-
-== Release Note
-
-https://zero88.github.io/robotframework-excel/docs/release-notes.md[Release Note Documentation]
 
 == Limitation
 
