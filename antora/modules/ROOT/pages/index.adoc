@@ -1,0 +1,98 @@
+= Robotframework-excel for Robot Framework
+
+image:https://img.shields.io/pypi/v/robotframework-excel.svg[Version,link=https://img.shields.io/pypi/v/robotframework-excel.svg]
+image:https://img.shields.io/pypi/l/robotframework-excel.svg[License,link=https://img.shields.io/pypi/l/robotframework-excel.svg]
+image:https://img.shields.io/pypi/status/robotframework-excel.svg[Status,link=https://img.shields.io/pypi/status/robotframework-excel.svg]
+image:https://img.shields.io/pypi/pyversions/robotframework-excel.svg[PyVersion,link=https://img.shields.io/pypi/pyversions/robotframework-excel.svg]
+
+image:https://travis-ci.org/zero-88/robotframework-excel.svg?branch=master[Build Status,link=https://travis-ci.org/zero-88/robotframework-excel]
+image:https://sonarcloud.io/api/project_badges/measure?project=robotframework-excel&metric=coverage[Coverage,link=https://sonarcloud.io/component_measures?id=robotframework-excel&metric=coverage]
+image:https://sonarcloud.io/api/project_badges/measure?project=robotframework-excel&metric=alert_status[Quality Status,link=https://sonarcloud.io/dashboard?id=robotframework-excel]
+
+== Introduction
+
+Robotframework-excel is a Robot Framework Library that provides keywords to allow opening, reading, writing and saving Excel files.
+
+* Information about Robotframework-excel keywords can be found on the https://zero88.github.io/robotframework-excel/docs/ExcelRobot.html[ExcelRobot-Keyword Documentation] page.
+* Information about working with Excel files in Python can be found on the http://www.python-excel.org/[Python Excel] page.
+
+== Requirements
+
+* Python &gt;= 2.7 | Python &gt;= 3.3
+* Robot Framework &gt;= 3.0
+* xlutils 2.0.0. Access the downloads https://pypi.python.org/pypi/xlutils/1.7.1[here], or use pip install xlutils.
+* https://pypi.python.org/pypi/xlrd[xlrd] that reads data from an Excel file
+* https://pypi.python.org/pypi/xlwt[xlwt] that can write to an Excel file.
+* openpyxl 1.0.2
+* natsort 5.2.0. Access the downloads https://pypi.python.org/pypi/natsort/5.2.0[here], or use pip install natsort.
+* enum34 1.1.6
+
+== Installation
+
+The recommended installation tool is http://pip-installer.org[pip].
+
+Install pip. Enter the following (Append `--upgrade` to update both the library and all its dependencies to the latest version):
+
+[source,bash]
+----
+pip install robotframework-excel --upgrade
+----
+
+To install a specific version enter:
+
+[source,bash]
+----
+pip install robotframework-excel==(version)
+----
+
+=== Uninstall
+
+To uninstall Robotframework-excel use the following pip command:
+
+[source,bash]
+----
+pip uninstall robotframework-excel
+----
+
+== Project structure
+
+* `ExcelRobot/base.py`: The Robot Python Library defines excel operation keyword.
+* `tests/unit/*.py`: Unit test
+* `tests/acceptance/ExcelRobotTest.robot`: Example robot test file to display what various keywords from Robotframework-excel accomplish
+* `docs/ExcelRobot.html`: Keyword documentation for the Robotframework-excel.
+
+== Usage
+
+To write tests with Robot Framework and Robotframework-excel, `ExcelRobot` must be imported into your Robot test suite.
+See http://code.google.com/p/robotframework/wiki/UserGuide[Robot Framework User Guide] for more information.
+
+== Running the Demo
+
+The test file `ExcelRobotTest.robot`, is an easily executable test for Robot Framework using Robotframework-excel.
+
+For in depth detail on how the keywords function, read the Keyword documentation found here : https://zero88.github.io/robotframework-excel/docs/ExcelRobot.html[Keyword Documentation]
+
+Open a command prompt within the `tests/acceptance` folder and run:
+
+[source,bash]
+----
+pybot ExcelRobotTest.robot -d "./out"
+----
+
+== Release Note
+
+https://zero88.github.io/robotframework-excel/docs/release-notes.md[Release Note Documentation]
+
+== Limitation
+
+* Lack `DataType` is `CURRENCY` and `PERCENTAGE`
+* Not yet optimize performance when saving Excel file after modifying itself
+
+== Contribution
+
+The http://groups.google.com/group/robotframework-users[user group for Robot Framework] is the best place to get help. Include in the post:
+
+* Contact the https://groups.google.com/forum/#!forum/python-excel[Python-Excel google group]
+* Full description of what you are trying to do and expected outcome
+* Version number of Robotframework-excel and Robot Framework
+* Traceback or other debug output containing error information

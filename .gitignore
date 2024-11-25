@@ -1,9 +1,6 @@
-*.pyc
-/dist
-/build
-*egg-info/
-/*out
-.scannerwork
-.coverage
-
-build.md
+*
+!*/
+!/antora/**
+!README.adoc
+!.gitattributes
+!.editorconfig

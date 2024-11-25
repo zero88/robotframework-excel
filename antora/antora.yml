@@ -1,0 +1,4 @@
+name: robotframework-excel
+title: Excel robot keywords for RobotFramework
+version: main
+nav: [modules/ROOT/nav.adoc]
