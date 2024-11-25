@@ -1,6 +1,6 @@
 name: robotframework-excel
 title: Robotframework-Excel
-version: main
+version: v1.0.0-beta4
 nav: [modules/ROOT/nav.adoc]
 asciidoc:
   attributes:
