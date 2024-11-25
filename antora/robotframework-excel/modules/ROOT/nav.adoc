@@ -1,9 +1,6 @@
-.Core
 * xref:index.adoc[]
 * xref:attachment$keywords/ExcelRobot.html[Keywords]
 
 .Project Governance
 * xref:pg-changelog.adoc[Changelog]
-* xref:pg-upgrade-notes.adoc[]
-* xref:pg-release-schedule.adoc[]
 * xref:pg-copyright-and-license.adoc[]

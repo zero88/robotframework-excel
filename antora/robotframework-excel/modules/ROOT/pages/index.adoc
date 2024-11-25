@@ -1,4 +1,5 @@
-= Robotframework-excel for Robot Framework
+= Robotframework-Excel
+:navtitle: Robotframework-Excel
 
 image:https://img.shields.io/pypi/v/robotframework-excel.svg[Version,link=https://img.shields.io/pypi/v/robotframework-excel.svg]
 image:https://img.shields.io/pypi/l/robotframework-excel.svg[License,link=https://img.shields.io/pypi/l/robotframework-excel.svg]

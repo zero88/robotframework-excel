@@ -1,4 +1,4 @@
-= RELEASE NOTE
+= Release Note
 
 == Version 1.0.0b4
 
