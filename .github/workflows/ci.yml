@@ -1,0 +1,170 @@
+name: ci-pipeline
+
+on:
+  create:
+    branches: [ release/** ]
+  push:
+    branches:
+      - main
+      - hotfix/**
+    tags: [ 'v*' ]
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/*.yml'
+      - '*.md'
+      - 'LICENSE'
+  pull_request:
+    types: [ opened, synchronize, reopened, closed ]
+    branches:
+      - main
+      - hotfix/**
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/*.yml'
+      - '*.md'
+      - 'LICENSE'
+
+env:
+  POETRY_VERSION: 1.8.4
+  PROJECT_NAME: robotframework-excel
+  PROJECT_DOCS_REF: docs/main
+  PROJECT_DOCS_PATH: robotframework-excel-docs
+  DOC_PROFILE_PATH: antora/robotframework-excel
+  ANTORA_DOC_PATH: ./docs
+
+jobs:
+  context:
+    uses: zero88/shared-ghactions/.github/workflows/project-context.yml@main
+    with:
+      profile: robotframework-excel
+    secrets:
+      githubToken: ${{ secrets.OSS_GITHUB_TOKEN }}
+      gpgKey: ${{ secrets.CI_GPG_PRIVATE_KEY }}
+      gpgPassphrase: ${{ secrets.CI_GPG_PASSPHARSE }}
+      gpgFingerprint: ${{ secrets.CI_GPG_SUBKEY_FINGERPRINT }}
+
+  build:
+    needs: context
+    if: needs.context.outputs.shouldBuild == 'true'
+    strategy:
+      matrix:
+#        python: [ '3.5', '3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12' ]
+        python: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
+        poetry: [ '1.8.4' ]
+        os: [ 'ubuntu-latest', 'windows-latest' ]
+      fail-fast: false
+    name: With Python-${{ matrix.python }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install python-poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: ${{ matrix.poetry }}
+
+      - name: Setup poetry
+        run: |
+          poetry about
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ./.venv
+          key: venv-${{ matrix.python }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --with test
+
+      - name: Unit test
+        run: |
+          poetry run pytest -v
+
+      - name: UAT test
+        run: |
+          poetry run robot -L DEBUG -d out/uat -v type:xls  ./tests/acceptance
+          poetry run robot -L DEBUG -d out/uat -v type:xlsx ./tests/acceptance
+
+  docs:
+    runs-on: ubuntu-latest
+    needs: context
+    if: needs.context.outputs.shouldBuild == 'true'
+    name: Bundle robot docs
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.context.outputs.sha }}
+
+      - name: Checkout ${{ env.PROJECT_NAME }} ${{ env.PROJECT_DOCS_REF }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PROJECT_DOCS_REF }}
+          path: ${{ env.PROJECT_DOCS_PATH }}
+          token: ${{ secrets.OSS_GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+
+      - name: Install python-poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Setup poetry
+        run: |
+          poetry about
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ./.venv
+          key: venv-python-version-file-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Generate robot doc
+        run: |
+          poetry run python -m robot.libdoc -f html ExcelRobot/ ${{ env.ANTORA_DOC_PATH }}/modules/ROOT/attachments/keywords/ExcelRobot.html
+
+      - name: Sync doc output to Git branch [${{ needs.context.outputs.docBranch }}]
+        if: needs.context.outputs.shouldPublish == 'true'
+        shell: bash
+        run: |
+          fqn_doc_path="${{ env.PROJECT_DOCS_PATH }}/${{ env.DOC_PROFILE_PATH }}"
+          rm -rf $fqn_doc_path \
+            && mkdir $fqn_doc_path \
+            && touch $fqn_doc_path/.gitkeep \
+            && cp -rf ${{ env.ANTORA_DOC_PATH }}/* $fqn_doc_path
+          cd ${{ env.PROJECT_DOCS_PATH }}
+          git add .
+          git diff-index --quiet HEAD || git commit -am "Update ${{ needs.context.outputs.docCommitMsg }}"
+          if [[ '${{ needs.context.outputs.isRelease }}' == 'true' ]]; then
+               git tag -sf -am "Release ${{ needs.context.outputs.docCommitMsg }}" ${{ needs.context.outputs.docBranch }}
+          fi
+          git push -u origin ${{ needs.context.outputs.docBranch }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [ build, docs ]
+    if: needs.context.outputs.isRelease == 'true'
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: Release 'robotframework-excel' ${{ needs.context.outputs.version }}
+          tag_name: ${{ needs.context.outputs.branch }}
+          generate_release_notes: true

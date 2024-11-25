@@ -1,0 +1,10 @@
+= Robotframework-Excel Copyright and License
+:navtitle: Copyright and License
+
+== Copyright
+
+Copyright (C) 2018-present https://github.com/zero88[@zero88].
+
+== License
+
+Use of Robotframework-Excel is granted under the terms of the {project-url}/blob/main/LICENSE[Apache License 2.0].

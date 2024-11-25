@@ -1,0 +1,7 @@
+name: robotframework-excel
+title: Robotframework-Excel
+version: main
+nav: [modules/ROOT/nav.adoc]
+asciidoc:
+  attributes:
+    project-url: 'https://github.com/zero88/robotframework-excel'

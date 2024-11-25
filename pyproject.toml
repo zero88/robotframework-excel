@@ -1,0 +1,63 @@
+[tool.poetry]
+package-mode = true
+name = "robotframework-excel"
+version = "2.0.0"
+description = "This test library provides some keywords to allow opening, reading, writing, and saving Excel files from Robot Framework."
+authors = ["zero88 <10863525+zero88@users.noreply.github.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/zero88/robotframework-excel"
+repository = "https://github.com/zero88/robotframework-excel"
+documentation = "https://zero88.github.io/webdocs/robotframework-excel"
+keywords = ["robotframework", "excel"]
+classifiers =[
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Robot Framework :: Library",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Quality Assurance",
+]
+packages = [
+    { include = "ExcelRobot" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+six = "1.11.0"
+natsort = "5.2.0"
+xlutils = "2.0.0"
+xlrd = "1.2.0"
+xlwt = "1.3.0"
+openpyxl = "2.6.2"
+robotframework = ">=3.0"
+enum34 = "1.1.6"
+
+[tool.poetry.group.test.dependencies]
+coverage = "4.5.1"
+pytest = "^8.3.3"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.3"
+
+[tool.poetry.scripts]
+#unittest = "nosetests tests.unit -v --with-xunit --xunit-file=out/unit/nosetests.xml -s --debug=ExcelRobot"
+#uat-xls = "robot -L DEBUG -d out/uat -v type:xls ./tests/acceptance"
+#uat-xlsx = "robot -L DEBUG -d out/uat -v type:xlsx ./tests/acceptance"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/zero88/robotframework-excel/issues"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
