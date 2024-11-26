@@ -136,7 +136,7 @@ jobs:
 
       - name: Generate robot doc
         run: |
-          poetry run python -m robot.libdoc -f html ExcelRobot/ ${{ env.ANTORA_DOC_PATH }}/modules/ROOT/attachments/keywords/ExcelRobot.html
+          poetry run python -m robot.libdoc -f html -v $(poetry version -s) ExcelRobot ${{ env.ANTORA_DOC_PATH }}/modules/ROOT/attachments/keywords/ExcelRobot.html
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
