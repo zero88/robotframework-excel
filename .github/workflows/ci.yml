@@ -167,6 +167,18 @@ jobs:
                git tag -sf -am "Release ${{ needs.context.outputs.docCommitMsg }}" ${{ needs.context.outputs.docBranch }}
           fi
           git push -u origin ${{ needs.context.outputs.docBranch }}
+          
+  webdocs:
+    uses: zero88/shared-ghactions/.github/workflows/webdocs-communal-publish.yml@main
+    needs: [ context, docs ]
+    if: needs.context.outputs.shouldPublish == 'true'
+    with:
+      webdocsRepo: 'zero88/webdocs'
+      webdocsRef: 'main'
+      webdocsWorkflow: 'webdocs.yml'
+      docCommitMsg: ${{ needs.context.outputs.docCommitMsg }}
+    secrets:
+      githubToken: ${{ secrets.OSS_GITHUB_TOKEN }}
 
   release:
     runs-on: ubuntu-latest
