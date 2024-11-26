@@ -3,10 +3,7 @@
 import logging
 import six
 from ExcelRobot.base import ExcelLibrary
-from ExcelRobot.version import VERSION
 from ExcelRobot.utils import DateFormat, NumberFormat, BoolFormat
-
-_version_ = VERSION
 
 
 class ExcelRobot(ExcelLibrary):
@@ -41,7 +38,6 @@ class ExcelRobot(ExcelLibrary):
         | Library | ExcelRobot | date_format='dd/mm/yyyy'
     """
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
-    ROBOT_LIBRARY_VERSION = VERSION
 
     def __init__(self,
                  date_format='yyyy-mm-dd', time_format='HH:MM:SS AM/PM', datetime_format='yyyy-mm-dd HH:MM',
