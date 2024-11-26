@@ -37,6 +37,7 @@ jobs:
     uses: zero88/shared-ghactions/.github/workflows/project-context.yml@main
     with:
       profile: robotframework-excel
+      versionFile: pyproject.toml
     secrets:
       githubToken: ${{ secrets.OSS_GITHUB_TOKEN }}
       gpgKey: ${{ secrets.CI_GPG_PRIVATE_KEY }}
@@ -80,12 +81,10 @@ jobs:
           key: venv-${{ matrix.python }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
-        run: |
-          poetry install --with test
+        run: poetry install --with test
 
       - name: Unit test
-        run: |
-          poetry run pytest -v
+        run: poetry run pytest -v
 
       - name: UAT test
         run: |
@@ -131,8 +130,7 @@ jobs:
           key: venv-python-version-file-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
-        run: |
-          poetry install
+        run: poetry install
 
       - name: Generate robot doc
         run: |
@@ -179,9 +177,54 @@ jobs:
     secrets:
       githubToken: ${{ secrets.OSS_GITHUB_TOKEN }}
 
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [ context, build, docs ]
+    if: needs.context.outputs.isRelease == 'true'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/${{ env.PROJECT_NAME }}
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.context.outputs.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+
+      - name: Install python-poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
+      - name: Setup poetry
+        run: |
+          poetry about
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ./.venv
+          key: venv-python-version-file-${{ hashFiles('poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build project
+        run: poetry build
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
   release:
     runs-on: ubuntu-latest
-    needs: [ build, docs ]
+    needs: [ build, docs, publish ]
     if: needs.context.outputs.isRelease == 'true'
     steps:
       - name: Create GitHub Release
@@ -189,6 +232,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Release 'robotframework-excel' ${{ needs.context.outputs.version }}
+          name: Release '${{ env.PROJECT_NAME }}' ${{ needs.context.outputs.version }}
           tag_name: ${{ needs.context.outputs.branch }}
           generate_release_notes: true
